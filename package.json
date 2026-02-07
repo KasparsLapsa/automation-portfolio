@@ -21,7 +21,14 @@
         "lint": "npx eslint .",
         "lint:fix": "npx eslint . --fix",
         "format": "npx prettier --write .",
-        "postinstall": "is-ci || husky"
+        "postinstall": "is-ci || husky",
+        "test:portfolio:ui": "npx playwright test --project \"public-chromium\"",
+        "test:portfolio:api": "npx playwright test --project \"public-api\"",
+        "test:portfolio:smoke": "npx playwright test --grep \"@smoke\" --project \"public-chromium\"",
+        "test:portfolio:sanity": "npx playwright test --grep \"@sanity\" --project \"public-chromium\"",
+        "test:portfolio:api:smoke": "npx playwright test --grep \"@smoke\" --project \"public-api\"",
+        "test:portfolio:api:sanity": "npx playwright test --grep \"@sanity\" --project \"public-api\""
+        
     },
     "keywords": [],
     "author": "",
