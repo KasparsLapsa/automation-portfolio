@@ -24,13 +24,11 @@ const prettierConfig = {
  */
 type PluginConfig = { rules?: Record<string, unknown> };
 
-const tsRecommendedRules = (
-    tseslint.configs?.recommended as PluginConfig
-)?.rules ?? {};
+const tsRecommendedRules =
+    (tseslint.configs?.recommended as PluginConfig)?.rules ?? {};
 
-const playwrightRecommendedRules = (
-    playwright.configs?.['flat/recommended'] as PluginConfig
-)?.rules ?? {};
+const playwrightRecommendedRules =
+    (playwright.configs?.['flat/recommended'] as PluginConfig)?.rules ?? {};
 
 /**
  * ESLint flat configuration for the Playwright Scaffold project.
@@ -38,7 +36,12 @@ const playwrightRecommendedRules = (
  */
 const config = [
     {
-        ignores: ['node_modules', 'dist', 'playwright-report', 'test-results'],
+        ignores: ['node_modules', 'dist', 'playwright-report', 'test-results','tests/app/auth.setup.ts',
+      'tests/app/api/**',
+      'tests/app/e2e/**',
+      'tests/app/functional/**',
+      'helpers/app/**',
+      'pages/app/**',],
     },
     {
         files: ['**/*.ts', '**/*.tsx'],

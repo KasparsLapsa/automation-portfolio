@@ -416,24 +416,24 @@ Tags control selective test execution. Apply tags to individual tests via `{ tag
 
 **Importance tags** (pick one per test):
 
-| Tag | Purpose | npm Command |
-| --- | ------- | ----------- |
-| `@smoke` | Critical path -- run first and frequently | `npm run test:smoke` |
-| `@sanity` | Key functionality verification | `npm run test:sanity` |
-| `@regression` | Full regression coverage | `npm run test:regression` |
+| Tag           | Purpose                                   | npm Command               |
+| ------------- | ----------------------------------------- | ------------------------- |
+| `@smoke`      | Critical path -- run first and frequently | `npm run test:smoke`      |
+| `@sanity`     | Key functionality verification            | `npm run test:sanity`     |
+| `@regression` | Full regression coverage                  | `npm run test:regression` |
 
 **Type tags** (pick one per test):
 
-| Tag | Purpose | npm Command |
-| --- | ------- | ----------- |
-| `@functional` | UI functional tests | -- |
-| `@e2e` | End-to-end user flows | `npm run test:e2e` |
-| `@api` | API-only tests | `npm run test:api` |
+| Tag           | Purpose               | npm Command        |
+| ------------- | --------------------- | ------------------ |
+| `@functional` | UI functional tests   | --                 |
+| `@e2e`        | End-to-end user flows | `npm run test:e2e` |
+| `@api`        | API-only tests        | `npm run test:api` |
 
 **Cross-cutting tags** (combine with any importance/type tag):
 
-| Tag | Purpose | npm Command |
-| --- | ------- | ----------- |
+| Tag            | Purpose                           | npm Command                |
+| -------------- | --------------------------------- | -------------------------- |
 | `@destructive` | Modifies shared application state | `npm run test:destructive` |
 
 ### How Tag Filtering Works
@@ -950,7 +950,7 @@ This repository follows a strict architecture designed for **deterministic Playw
 | **Assertions**           | Use explicit web-first assertions (e.g., `expect(locator).toBeVisible()`).                                                                                        |
 | **Linting**              | Code must pass ESLint and Prettier standards without warnings.                                                                                                    |
 | **Data Strategy**        | Use `test-data/static/` for immutable boundary data. Use `test-data/factories/` for dynamic Faker-generated data.                                                 |
-| **Destructive Cleanup**  | Tests tagged `@destructive` MUST include `afterEach`/`afterAll` hooks to revert state changes. See [Tag Reference](#tag-reference).                                |
+| **Destructive Cleanup**  | Tests tagged `@destructive` MUST include `afterEach`/`afterAll` hooks to revert state changes. See [Tag Reference](#tag-reference).                               |
 
 ### SHOULD (Recommended)
 
