@@ -16,7 +16,6 @@ test.describe('AutomationExercise - smoke', () => {
       });
 
       await test.step('AND key home content should be visible', async () => {
-        // stable-ish assertion: the header/logo text
         await expect(page.getByRole('link', { name: /Home/i })).toBeVisible();
       });
     }

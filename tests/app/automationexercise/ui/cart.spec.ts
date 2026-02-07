@@ -13,8 +13,6 @@ test.describe('AutomationExercise - Cart', () => {
 
       await test.step('WHEN user adds first product to cart', async () => {
         await page.locator('.productinfo a:has-text("Add to cart")').first().click();
-
-        // Modal typically appears
         await expect(page.getByRole('button', { name: /Continue Shopping/i })).toBeVisible();
         await page.getByRole('button', { name: /Continue Shopping/i }).click();
       });
