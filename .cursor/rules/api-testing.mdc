@@ -1,0 +1,148 @@
+---
+description: API testing patterns -- request fixture, schema validation, and endpoint testing
+globs: fixtures/api/**,tests/**/api/**
+alwaysApply: false
+---
+
+# API Testing
+
+## API Request Fixture
+
+Use the `apiRequest` fixture for all API calls in tests. It provides type-safe requests with automatic response parsing.
+
+```typescript
+import { expect, test } from '../../../fixtures/pom/test-options';
+import { UserResponse, UserResponseSchema } from '../../../fixtures/api/schemas/app/userSchema';
+
+test('should return user data', { tag: '@api' }, async ({ apiRequest }) => {
+    const { status, body } = await apiRequest<UserResponse>({
+        method: 'GET',
+        url: '/api/users/me',
+        baseUrl: process.env.API_URL,
+        headers: process.env.ACCESS_TOKEN,
+    });
+
+    expect(status).toBe(200);
+    expect(UserResponseSchema.parse(body)).toBeTruthy();
+});
+```
+
+## Request Parameters
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `method` | `'GET' \| 'POST' \| 'PUT' \| 'DELETE' \| 'PATCH'` | Yes | HTTP method |
+| `url` | `string` | Yes | Endpoint path |
+| `baseUrl` | `string` | No | Base URL to prepend |
+| `body` | `Record<string, unknown>` | No | Request payload |
+| `headers` | `string` | No | Auth token for Authorization header |
+| `authType` | `'Bearer' \| 'Token' \| 'Basic'` | No | Auth scheme (default: `'Bearer'`) |
+
+## Response Validation
+
+**ALWAYS** validate API responses with Zod schemas:
+
+```typescript
+const { status, body } = await apiRequest<UserResponse>({ ... });
+
+// Validates structure and types at runtime -- throws if invalid
+const validatedUser = UserResponseSchema.parse(body);
+```
+
+## Schema Location
+
+```
+fixtures/api/schemas/
+├── app/            ← App-specific response/request schemas
+│   └── userSchema.ts
+└── util/           ← Shared error response schemas
+    └── errorResponseSchema.ts
+```
+
+### Creating a New Schema
+
+```typescript
+// fixtures/api/schemas/app/productSchema.ts
+import { z } from 'zod';
+
+export const ProductSchema = z.object({
+    id: z.string().uuid(),
+    name: z.string().min(1),
+    price: z.number().positive(),
+    category: z.enum(['electronics', 'clothing', 'food']),
+    inStock: z.boolean(),
+});
+
+export type Product = z.infer<typeof ProductSchema>;
+```
+
+### Error Response Schemas
+
+Common error schemas are in `fixtures/api/schemas/util/errorResponseSchema.ts`:
+
+```typescript
+import {
+    UnauthorizedResponse,
+    UnauthorizedResponseSchema,
+} from '../../../fixtures/api/schemas/util/errorResponseSchema';
+
+const { status, body } = await apiRequest<UnauthorizedResponse>({
+    method: 'POST',
+    url: '/api/login',
+    baseUrl: process.env.API_URL,
+    body: { email: 'bad@email.com', password: 'wrong' },
+});
+
+expect(status).toBe(401);
+expect(UnauthorizedResponseSchema.parse(body)).toBeTruthy();
+```
+
+Available error schemas: `BadRequestResponseSchema` (400), `UnauthorizedResponseSchema` (401), `ForbiddenResponseSchema` (403), `NotFoundResponseSchema` (404).
+
+## API Architecture
+
+```
+fixtures/api/
+├── api-request-fixture.ts    ← Playwright fixture wrapping the request function
+├── api-types.ts              ← TypeScript types (ApiRequestParams, ApiRequestResponse, etc.)
+├── plain-function.ts         ← Core request function (handles HTTP methods, headers, parsing)
+└── schemas/                  ← Zod schemas for validation
+```
+
+- `plain-function.ts` -- Low-level HTTP function. Handles method routing, auth headers, response parsing.
+- `api-request-fixture.ts` -- Wraps the plain function as a Playwright fixture with generics for type-safe responses.
+- `api-types.ts` -- Shared types: `ApiRequestParams`, `ApiRequestResponse<T>`, `ApiRequestFn`.
+
+## Exploration Before Schema Creation
+
+When creating schemas for a real API, **make a request to the endpoint first** to discover:
+- Actual response structure and field names
+- Data types for each field
+- Optional vs required fields
+- Nested objects or arrays
+- Error response formats
+
+This ensures schemas match the real API instead of being assumptions.
+
+## Credentials and URLs
+
+**NEVER** hardcode API URLs or credentials:
+
+```typescript
+// CORRECT
+baseUrl: process.env.API_URL,
+headers: process.env.ACCESS_TOKEN,
+body: { email: process.env.APP_EMAIL, password: process.env.APP_PASSWORD },
+
+// FORBIDDEN
+baseUrl: 'https://api.example.com',
+headers: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...',
+```
+
+Use enums for endpoint paths:
+
+```typescript
+import { ApiEndpoints } from '../../../enums/app/app';
+
+url: ApiEndpoints.LOGIN,
+```

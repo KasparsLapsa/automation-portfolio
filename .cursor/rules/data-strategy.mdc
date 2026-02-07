@@ -1,0 +1,121 @@
+---
+description: Test data strategy -- factories, static data, and Faker usage
+globs: test-data/**,tests/**
+alwaysApply: false
+---
+
+# Data Strategy
+
+This framework uses a **bifurcated data strategy**: static data for deterministic edge cases and dynamic factories for test isolation.
+
+## File Locations
+
+| Type | Directory | Purpose |
+|------|-----------|---------|
+| Static data | `test-data/static/app/` | Immutable JSON for boundary/invalid cases |
+| Factories | `test-data/factories/app/` | Dynamic Faker-generated data |
+
+## Static Data (`test-data/static/`)
+
+Immutable JSON files for **boundary testing, invalid inputs, and edge cases**. This data never changes, ensuring reproducible tests.
+
+### Structure
+
+```json
+{
+    "invalidCredentials": [
+        {
+            "description": "valid email with wrong password",
+            "email": "test.user@example.com",
+            "password": "WrongPassword123!"
+        }
+    ]
+}
+```
+
+### Usage in Tests
+
+```typescript
+import testData from '../../../test-data/static/app/invalidCredentials.json';
+
+const { invalidCredentials } = testData;
+
+for (const { description, email, password } of invalidCredentials) {
+    test(`should show error for ${description}`, { tag: '@regression' }, async ({ appPage }) => {
+        await appPage.login(email, password);
+        await expect(appPage.errorMessage).toBeVisible();
+    });
+}
+```
+
+## Dynamic Factories (`test-data/factories/`)
+
+TypeScript factory functions using **Faker + Zod** for unique, valid data per test run. This prevents data collision in parallel execution.
+
+### Factory Pattern
+
+```typescript
+import { faker } from '@faker-js/faker';
+import { UserResponse, UserResponseSchema } from '../../../fixtures/api/schemas/app/userSchema';
+
+/**
+ * Generates a valid user object with randomized data.
+ * @param {Partial<UserResponse>} overrides - Optional overrides for specific fields.
+ * @returns {UserResponse} A valid user object matching the schema.
+ */
+export const generateUser = (overrides?: Partial<UserResponse>): UserResponse => {
+    const defaults: UserResponse = {
+        id: faker.string.uuid(),
+        email: faker.internet.email(),
+        token: faker.string.alphanumeric(64),
+    };
+
+    return UserResponseSchema.parse({ ...defaults, ...overrides });
+};
+```
+
+### Key Requirements
+
+1. **Import Faker**: `import { faker } from '@faker-js/faker';`
+2. **Import the Zod schema**: Use the corresponding schema from `fixtures/api/schemas/`.
+3. **Accept overrides**: Parameter `overrides?: Partial<SchemaType>` for customization.
+4. **Validate with schema**: Always call `Schema.parse(...)` on the merged output.
+5. **Export typed return**: Return type must match the Zod-inferred type.
+
+### Usage in Tests
+
+```typescript
+import { generateUser, generateLoginCredentials } from '../../../test-data/factories/app/user.factory';
+
+// Generate unique data for this test run
+const user = generateUser();
+const creds = generateLoginCredentials();
+
+// Override specific fields
+const adminUser = generateUser({ email: 'admin@company.com' });
+const customCreds = generateLoginCredentials({ password: 'SpecificPassword123!' });
+```
+
+## When to Use Which
+
+| Scenario | Use |
+|----------|-----|
+| Invalid email formats, SQL injection strings | Static data |
+| Boundary values (min/max lengths, empty strings) | Static data |
+| Happy-path user data for API calls | Factory |
+| Registration data that must be unique per run | Factory |
+| Data-driven tests with known expected outcomes | Static data |
+| Test isolation in parallel execution | Factory |
+
+## No Magic Numbers
+
+Define timeouts, limits, and constants in `config/` or `enums/` -- never hardcode numbers directly in tests or factories:
+
+```typescript
+// FORBIDDEN
+await page.waitForTimeout(5000);
+const maxRetries = 3;
+
+// CORRECT -- use config/enums
+import { Timeouts } from '../../config/app';
+```

@@ -1,0 +1,65 @@
+---
+description: Configuration file conventions and environment variable usage
+globs: config/**
+alwaysApply: false
+---
+
+# Configuration
+
+## File Locations
+
+| Type | Directory | Purpose |
+|------|-----------|---------|
+| App config | `config/app.ts` | App-specific URLs and settings |
+| Utility config | `config/util/util.ts` | Utility/third-party service config |
+
+## Configuration Pattern
+
+Configuration objects centralize environment-dependent values:
+
+```typescript
+export const appConfig = {
+    /** Frontend application URL */
+    appUrl: process.env.APP_URL,
+    /** Backend API URL */
+    apiUrl: process.env.API_URL,
+};
+```
+
+## Rules
+
+### No Hardcoded URLs or Secrets
+
+**NEVER** hardcode URLs, credentials, or environment-specific values. Always read from `process.env`:
+
+```typescript
+// CORRECT
+appUrl: process.env.APP_URL,
+
+// FORBIDDEN
+appUrl: 'https://staging.example.com',
+```
+
+### Organization
+
+- **`config/app.ts`** -- URLs and settings for the main application under test.
+- **`config/util/`** -- Configuration for utility services, third-party tools, or shared infrastructure.
+
+### Adding New Configuration
+
+When adding a new config value:
+
+1. Add the environment variable to `env/.env.example` as a template.
+2. Add it to the appropriate config file with a JSDoc comment.
+3. Document the variable's purpose in the JSDoc.
+
+### JSDoc Comments
+
+All config properties must have JSDoc comments:
+
+```typescript
+export const appConfig = {
+    /** Frontend application URL loaded from APP_URL env variable */
+    appUrl: process.env.APP_URL,
+};
+```

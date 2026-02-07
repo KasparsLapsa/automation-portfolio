@@ -1,0 +1,52 @@
+---
+description: Helper function conventions, organization, and usage rules
+globs: helpers/**
+alwaysApply: false
+---
+
+# Helpers
+
+## File Locations
+
+| Type | Directory | Purpose |
+|------|-----------|---------|
+| App helpers | `helpers/app/` | App-specific helper functions (auth, setup) |
+| Utility helpers | `helpers/util/` | Reusable utility functions |
+
+## Organization
+
+- **`helpers/app/`** -- Functions specific to the application under test: authentication flows, storage state creation, data seeding.
+- **`helpers/util/`** -- Generic utility functions reusable across projects: date formatting, string manipulation, retry logic.
+
+## Helper vs. Fixture vs. Page Object
+
+Choose the right abstraction:
+
+| Use a **helper** when | Use a **fixture** when | Use a **page object** when |
+|---|---|---|
+| The function is used in setup scripts, not inside tests directly | The function needs Playwright's `page` or `request` context injected via DI | The logic encapsulates locators and user interactions on a specific page |
+| Example: `createAppStorageState()` | Example: `apiRequest`, `resetStorageState` | Example: `AppPage.login()` |
+
+## Authentication Helpers
+
+The `helpers/app/createStorageState.ts` file contains two key functions:
+
+- **`createAppStorageState()`** -- Launches a browser, performs UI login, and saves cookies/localStorage as a storage state file. Called by `auth.setup.ts`.
+- **`setUserAccessToken()`** -- Authenticates via API and stores the access token in `process.env.ACCESS_TOKEN`. Called by `auth.setup.ts`.
+
+## Coding Standards
+
+- Add JSDoc comments with `@param` and `@returns` on all exported functions.
+- Specify explicit return types (e.g., `Promise<void>`, `string`).
+- Use `process.env` for any credentials or URLs -- never hardcode.
+- Validate inputs/outputs with Zod schemas when working with API data.
+
+```typescript
+/**
+ * Creates and saves the browser storage state after successful login.
+ * @returns {Promise<void>} Resolves when storage state is saved.
+ */
+export async function createAppStorageState(): Promise<void> {
+    // implementation
+}
+```

@@ -1,0 +1,13 @@
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.auth/
+tests-cases/
+test-downloads/
+env/.env.dev
+# Environment files (keep .env.example as template)
+env/.env.*
+!env/.env.example

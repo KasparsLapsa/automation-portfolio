@@ -1,0 +1,88 @@
+---
+description: Selector strategy and locator rules for Playwright page objects
+globs: pages/**
+alwaysApply: false
+---
+
+# Selector Strategy
+
+## Priority Order (Mandatory)
+
+Use semantic locators in this order. Move to the next option ONLY when the previous one is not feasible:
+
+1. **`getByRole()`** -- Accessibility-based. Always the first choice for buttons, links, headings, textboxes, checkboxes, etc.
+2. **`getByLabel()`** -- For form inputs that have associated `<label>` elements.
+3. **`getByPlaceholder()`** -- For inputs with placeholder text when no label exists.
+4. **`getByText()`** -- For static text content, messages, or non-interactive elements.
+5. **`getByTestId()`** -- Fallback when none of the above produce a reliable locator.
+
+## Correct Examples
+
+```typescript
+// 1. getByRole -- buttons, links, headings, navigation
+page.getByRole('button', { name: 'Submit' });
+page.getByRole('link', { name: 'Dashboard' });
+page.getByRole('heading', { name: 'Welcome' });
+page.getByRole('navigation');
+page.getByRole('textbox', { name: 'Email' });
+page.getByRole('checkbox', { name: 'Remember me' });
+
+// 2. getByLabel -- form fields with labels
+page.getByLabel('Email');
+page.getByLabel('Password');
+
+// 3. getByPlaceholder -- inputs without labels
+page.getByPlaceholder('Search...');
+
+// 4. getByText -- static content
+page.getByText('Login successful');
+page.getByText(Messages.ERROR_MESSAGE); // prefer enums for repeated strings
+
+// 5. getByTestId -- last resort
+page.getByTestId('user-avatar');
+```
+
+## Forbidden (NEVER Use)
+
+- **XPath selectors** -- brittle, unreadable, and not accessible.
+  ```typescript
+  // FORBIDDEN
+  page.locator('//div[@id="test"]');
+  page.locator('xpath=//button[text()="Submit"]');
+  ```
+
+- **CSS selectors for primary strategy** -- acceptable only as `page.locator()` last resort, never as the default approach.
+  ```typescript
+  // AVOID unless absolutely necessary
+  page.locator('.btn-primary');
+  page.locator('#submit-button');
+  ```
+
+## Locator Patterns in Page Objects
+
+Define locators as **getter methods** that return `Locator`. This ensures fresh evaluation on each access:
+
+```typescript
+import { Locator, Page } from '@playwright/test';
+
+export class ExamplePage {
+    constructor(private readonly page: Page) {}
+
+    /** The submit button -- uses getByRole (preferred). */
+    get submitButton(): Locator {
+        return this.page.getByRole('button', { name: 'Submit' });
+    }
+
+    /** The email input field -- uses getByLabel. */
+    get emailInput(): Locator {
+        return this.page.getByLabel('Email');
+    }
+}
+```
+
+## Choosing Between Similar Locators
+
+- If the element has a **role** (button, link, heading, etc.), always prefer `getByRole()`.
+- If the element is a **form input with a label**, prefer `getByLabel()` over `getByRole('textbox')`.
+- If identifying by **exact text** risks matching multiple elements, add `{ exact: true }` or use a more specific role.
+- Use **enums** for repeated string values (error messages, labels) rather than hardcoding strings -- see `enums/app/app.ts`.

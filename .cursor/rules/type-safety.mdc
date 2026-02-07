@@ -1,0 +1,122 @@
+---
+description: TypeScript type safety and Zod schema rules
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# Type Safety
+
+## No `any` Type (Mandatory)
+
+**NEVER** use the `any` type. Use explicit types, Zod-inferred types, or `unknown` when the type is truly indeterminate.
+
+```typescript
+// FORBIDDEN
+const data: any = await response.json();
+function process(input: any): any { ... }
+
+// CORRECT
+const data: UserResponse = UserResponseSchema.parse(await response.json());
+function process(input: unknown): ProcessedResult { ... }
+```
+
+## Zod Schemas for API Types
+
+All API request/response types MUST be defined using Zod schemas in `fixtures/api/schemas/`.
+
+### Schema Location
+
+```
+fixtures/api/schemas/
+├── app/           ← App-specific schemas (user, product, etc.)
+│   └── userSchema.ts
+└── util/          ← Shared/common schemas (error responses)
+    └── errorResponseSchema.ts
+```
+
+### Schema Pattern
+
+```typescript
+import { z } from 'zod';
+
+// 1. Define the schema with validators
+export const UserResponseSchema = z.object({
+    id: z.string().uuid(),
+    email: z.string().email(),
+    token: z.string(),
+});
+
+// 2. Always export the inferred TypeScript type
+export type UserResponse = z.infer<typeof UserResponseSchema>;
+```
+
+### Using Schemas for Validation
+
+```typescript
+import { UserResponse, UserResponseSchema } from '../../../fixtures/api/schemas/app/userSchema';
+
+// Validate API response at runtime
+const { body } = await apiRequest<UserResponse>({ ... });
+const validatedData = UserResponseSchema.parse(body); // throws if invalid
+```
+
+### Zod Validators Reference
+
+Use the most specific Zod validator for each field:
+
+| Data Type | Validator | Example |
+|-----------|-----------|---------|
+| UUID | `z.string().uuid()` | `id: z.string().uuid()` |
+| Email | `z.string().email()` | `email: z.string().email()` |
+| URL | `z.string().url()` | `website: z.string().url()` |
+| Non-empty | `z.string().min(1)` | `name: z.string().min(1)` |
+| Enum | `z.enum([...])` | `role: z.enum(['admin', 'user'])` |
+| Literal | `z.literal(...)` | `statusCode: z.literal(200)` |
+| Optional | `.optional()` | `avatar: z.string().url().optional()` |
+| Array | `z.array(...)` | `items: z.array(ItemSchema)` |
+| Union | `z.union([...])` | `message: z.union([z.string(), z.array(z.string())])` |
+
+## TypeScript Strict Mode
+
+The project uses `"strict": true` in `tsconfig.json`. This means:
+
+- All parameters must have explicit types
+- Return types should be specified on public methods
+- No implicit `any` is allowed
+- Null checks are enforced
+
+## Function Signatures
+
+Always specify return types for public/exported functions:
+
+```typescript
+// CORRECT
+async submit(): Promise<void> { ... }
+async getData(): Promise<UserResponse> { ... }
+get submitButton(): Locator { ... }
+
+// AVOID -- missing return type
+async submit() { ... }
+```
+
+## Environment Variables
+
+Use non-null assertion (`!`) or provide defaults when accessing `process.env`:
+
+```typescript
+// Acceptable -- non-null assertion when env is guaranteed
+const url = process.env.APP_URL!;
+
+// Also acceptable -- with fallback
+const url = process.env.APP_URL ?? 'http://localhost:3000';
+```
+
+**NEVER** hardcode secrets or credentials:
+
+```typescript
+// FORBIDDEN
+const password = 'secret123';
+
+// CORRECT
+const password = process.env.APP_PASSWORD!;
+```

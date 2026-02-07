@@ -1,0 +1,138 @@
+---
+description: Fixture dependency injection pattern and fixture creation rules
+globs: fixtures/**,tests/**
+alwaysApply: false
+---
+
+# Fixtures and Dependency Injection
+
+## Core Rule
+
+**ALWAYS** use fixtures for dependency injection. **NEVER** instantiate page objects manually in test files.
+
+```typescript
+// CORRECT -- use the fixture
+test('example', async ({ appPage }) => {
+    await appPage.openHomePage();
+});
+
+// FORBIDDEN -- manual instantiation
+test('example', async ({ page }) => {
+    const appPage = new AppPage(page); // NEVER do this
+});
+```
+
+## Single Import Point
+
+All test files MUST import `test` and `expect` from the merged fixture file:
+
+```typescript
+import { expect, test } from '../../../fixtures/pom/test-options';
+```
+
+**NEVER** import from `@playwright/test` in spec files:
+
+```typescript
+// FORBIDDEN in spec files
+import { test, expect } from '@playwright/test';
+```
+
+## Fixture Architecture
+
+```
+fixtures/pom/test-options.ts          ← Single import point (merges all fixtures)
+    ├── fixtures/pom/page-object-fixture.ts   ← Page object fixtures
+    └── fixtures/api/api-request-fixture.ts   ← API request fixture
+```
+
+`test-options.ts` uses `mergeTests()` to combine fixture layers:
+
+```typescript
+import { test as base, mergeTests, request } from '@playwright/test';
+import { test as pageObjectFixture } from './page-object-fixture';
+import { test as apiRequestFixture } from '../api/api-request-fixture';
+
+const test = mergeTests(pageObjectFixture, apiRequestFixture);
+const expect = base.expect;
+export { test, expect, request };
+```
+
+## Adding a New Fixture
+
+### Step 1: Create the fixture file
+
+```typescript
+// fixtures/[category]/[name]-fixture.ts
+import { test as base } from '@playwright/test';
+import { MyNewPage } from '../../pages/app/my-new.page';
+
+export type MyFixtures = {
+    myNewPage: MyNewPage;
+};
+
+export const test = base.extend<MyFixtures>({
+    myNewPage: async ({ page }, use) => {
+        await use(new MyNewPage(page));
+    },
+});
+```
+
+### Step 2: Register in `page-object-fixture.ts`
+
+For page objects, add directly to the existing fixture:
+
+```typescript
+// fixtures/pom/page-object-fixture.ts
+export type FrameworkFixtures = {
+    appPage: AppPage;
+    myNewPage: MyNewPage; // Add the type
+    resetStorageState: () => Promise<void>;
+};
+
+export const test = base.extend<FrameworkFixtures>({
+    appPage: async ({ page }, use) => {
+        await use(new AppPage(page));
+    },
+    myNewPage: async ({ page }, use) => {
+        await use(new MyNewPage(page)); // Add the fixture
+    },
+    resetStorageState: async ({ context }, use) => {
+        await use(async () => {
+            await context.clearCookies();
+            await context.clearPermissions();
+        });
+    },
+});
+```
+
+### Step 3: Merge into `test-options.ts` (only for new fixture categories)
+
+If adding a completely new fixture category (not a page object), merge it:
+
+```typescript
+const test = mergeTests(pageObjectFixture, apiRequestFixture, newCategoryFixture);
+```
+
+## Built-in Fixtures
+
+| Fixture | Source | Purpose |
+|---------|--------|---------|
+| `appPage` | `page-object-fixture.ts` | Main application page object |
+| `resetStorageState` | `page-object-fixture.ts` | Clears cookies and permissions (for login tests) |
+| `apiRequest` | `api-request-fixture.ts` | Type-safe API request function |
+
+## Cleanup Pattern
+
+For fixtures that need teardown, use the `use` callback pattern:
+
+```typescript
+myFixture: async ({ page }, use) => {
+    // Setup
+    const resource = await createResource();
+
+    await use(resource);
+
+    // Teardown (runs after test)
+    await resource.cleanup();
+},
+```

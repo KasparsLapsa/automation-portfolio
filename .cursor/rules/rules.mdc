@@ -1,0 +1,131 @@
+---
+description: Orchestrator -- AI coding rules for Playwright test automation framework
+globs:
+alwaysApply: true
+---
+
+# Playwright Scaffold -- AI Rules Orchestrator
+
+This is the central rule file. It is always loaded and provides the high-level rules, workflow, and an index of detailed rule files that Cursor loads automatically based on file context.
+
+---
+
+## Constitution (Quick Reference)
+
+### MUST (Mandatory)
+
+| Rule | Requirement |
+|------|-------------|
+| **Dependency Injection** | Use fixtures from `fixtures/pom/test-options.ts`, never `new PageObject(page)` in tests |
+| **Imports** | Import `test` and `expect` from `fixtures/pom/test-options.ts` only (never `@playwright/test` in spec files) |
+| **Selectors** | Prioritize: `getByRole()` > `getByLabel()` > `getByPlaceholder()` > `getByText()` > `getByTestId()` |
+| **Type Safety** | Use Zod schemas in `fixtures/api/schemas/`, no `any` type |
+| **Assertions** | Web-first assertions only: `expect(locator).toBeVisible()`, never `waitForTimeout()` |
+| **Linting** | Code must pass ESLint and Prettier without warnings |
+| **Data Strategy** | Static data in `test-data/static/`, dynamic Faker data in `test-data/factories/` |
+| **Destructive Cleanup** | Tests tagged `@destructive` MUST include `afterEach`/`afterAll` hooks to revert state changes |
+
+### SHOULD (Recommended)
+
+| Rule | Recommendation |
+|------|---------------|
+| **Explore Before Generate** | Navigate and explore the application (page or API endpoint) before generating page objects, tests, or schemas to discover actual selectors, flows, and responses |
+| **Data Generation** | Use Faker via factories in `test-data/factories/` for happy-path data to ensure test isolation |
+| **Test Isolation** | Tests should be independent. Use `test.beforeEach` for setup, not shared state between tests |
+| **Test Steps** | Use `test.step()` with Given/When/Then structure for better readability and reporting |
+| **JSDoc Comments** | Add JSDoc comments to all public methods explaining parameters and return values |
+| **Enums for Strings** | Use enums from `enums/` for repeated string values (roles, routes, messages) instead of hardcoding |
+
+### WON'T (Forbidden)
+
+| Rule | Violation |
+|------|-----------|
+| **No XPath** | Never use XPath selectors |
+| **No Hard Waits** | Never use `page.waitForTimeout()` |
+| **No Secrets** | Never hardcode credentials, use `process.env` |
+| **No `any`** | Never use `any` type |
+| **No Tags on Describe** | Never put tags in `test.describe()`, only on individual tests |
+| **No Magic Numbers** | Define timeouts and constants in `config/` or `enums/` |
+| **No Manual Instantiation** | Never `new PageObject(page)` inside test files |
+
+---
+
+## File Naming Conventions
+
+| Type | Directory | Pattern | Example |
+|------|-----------|---------|---------|
+| Page objects | `pages/app/` | `[name].page.ts` | `login.page.ts` |
+| Components | `pages/components/` | `[name].component.ts` | `navigation.component.ts` |
+| Functional tests | `tests/app/functional/` | `[name].spec.ts` | `login.spec.ts` |
+| API tests | `tests/app/api/` | `[name].spec.ts` | `login.spec.ts` |
+| E2E tests | `tests/app/e2e/` | `[name].spec.ts` | `checkout.spec.ts` |
+| Setup files | `tests/app/` | `[name].setup.ts` | `auth.setup.ts` |
+| Data factories | `test-data/factories/app/` | `[name].factory.ts` | `user.factory.ts` |
+| Static data | `test-data/static/app/` | `[name].json` | `invalidCredentials.json` |
+| Zod schemas | `fixtures/api/schemas/app/` | `[name]Schema.ts` | `userSchema.ts` |
+| Enums | `enums/app/` | `[name].ts` | `app.ts` |
+
+---
+
+## AI Workflow
+
+1. **Read Rules** -- Check this file and the relevant detail rules (auto-loaded by Cursor based on file context).
+2. **Explore Application** -- Before generating any code, navigate to the target page or API endpoint to discover actual structure:
+   - **For UI pages:** Use the browser tool to navigate to the URL. Take a snapshot to discover element roles, labels, accessible names, form structure, button text, and dynamic content. This ensures accurate semantic locators instead of guessing.
+   - **For API endpoints:** Make a request to the endpoint to capture the actual response structure, field names, data types, and optional vs required fields. This ensures Zod schemas match the real API.
+   - **Skip exploration only** when the user has already provided the exact element structure or API response shape.
+3. **Locate Existing Code** -- Check `pages/`, `fixtures/api/schemas/` for existing patterns to follow.
+4. **Use Fixtures** -- Import from `fixtures/pom/test-options.ts`. Register new page objects in `fixtures/pom/page-object-fixture.ts`.
+5. **Generate Data** -- Use factories from `test-data/factories/` for dynamic data. Use static JSON from `test-data/static/` for boundary/invalid cases.
+6. **Verify Compliance** -- Ensure no WON'T rules violated. Check the verification checklist in `.cursor/prompts/common-tasks.md`.
+
+---
+
+## Code Generation Tasks
+
+**When asked to create, generate, add, fix, extend, update, or refactor code**, read `.cursor/prompts/common-tasks.md` for:
+
+- Prompt templates with correct file locations and patterns
+- Task-specific requirements (page objects, tests, schemas, factories)
+- Common mistakes to avoid (anti-patterns checklist)
+- Verification checklist for generated code quality
+
+---
+
+## Rule Files Index
+
+Detailed rules are in `.cursor/rules/` and are **auto-loaded by Cursor** when editing files matching their glob patterns. You do not need to read them manually -- they are injected into context automatically.
+
+| Rule File | Glob Scope | What It Covers |
+|-----------|------------|----------------|
+| `selectors.mdc` | `pages/**` | Selector priority, locator examples, forbidden patterns |
+| `page-objects.mdc` | `pages/**` | POM pattern, getter locators, component composition, registration |
+| `fixtures.mdc` | `fixtures/**`, `tests/**` | Dependency injection, fixture creation, merging into test-options |
+| `test-standards.mdc` | `tests/**` | Test structure, imports, tagging, steps, assertions, data-driven tests |
+| `type-safety.mdc` | `**/*.ts` | Zod schemas, no-any enforcement, TypeScript strict mode |
+| `data-strategy.mdc` | `test-data/**`, `tests/**` | Factories (Faker + Zod), static JSON data, when to use which |
+| `api-testing.mdc` | `fixtures/api/**`, `tests/**/api/**` | API request fixture, schema validation, endpoint testing |
+| `enums.mdc` | `enums/**` | Enum conventions, naming, organization |
+| `config.mdc` | `config/**` | Configuration patterns, environment variables |
+| `helpers.mdc` | `helpers/**` | Helper function conventions, auth helpers, helper vs fixture |
+
+---
+
+## Key File Locations
+
+```
+fixtures/pom/test-options.ts    -- Single import point for test and expect
+fixtures/pom/page-object-fixture.ts -- Page object fixture registration
+fixtures/api/api-request-fixture.ts -- API request fixture
+fixtures/api/schemas/app/       -- App-specific Zod schemas
+fixtures/api/schemas/util/      -- Shared error response schemas
+pages/app/                      -- Page objects
+pages/components/               -- Reusable UI components
+test-data/factories/app/        -- Data factories (Faker + Zod)
+test-data/static/app/           -- Static boundary/invalid data
+config/                         -- App configuration
+enums/app/                      -- App enums (endpoints, messages)
+enums/util/                     -- Shared enums (roles)
+helpers/app/                    -- App-specific helpers
+helpers/util/                   -- Utility functions
+```
