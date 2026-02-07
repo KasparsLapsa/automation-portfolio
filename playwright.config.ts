@@ -3,114 +3,89 @@ import dotenv from 'dotenv';
 import { StorageStatePaths } from './enums/app/app';
 
 /**
- * Load environment variables from .env file.
- * Defaults to ./env/.env.dev if ENVIRONMENT is not set.
+ * Load environment variables from env/.env.<environment>
+ * Defaults to env/.env.dev if ENVIRONMENT is not set.
  *
  * Usage:
  *   ENVIRONMENT=staging npx playwright test
  */
 const environment = process.env.ENVIRONMENT ?? 'dev';
 const environmentPath = `./env/.env.${environment}`;
-
 dotenv.config({ path: environmentPath });
 
-/**
- * Playwright Test Configuration
- * @see https://playwright.dev/docs/test-configuration
- */
 export default defineConfig({
-    testDir: './tests',
-    testIgnore: [/tests\/app\//],
-    /* Run tests in files in parallel */
-    fullyParallel: true,
+  testDir: './tests',
 
-    /* Fail the build on CI if you accidentally left test.only in the source code */
-    forbidOnly: !!process.env.CI,
+  /**
+   * Ignore scaffold example suites that require a real app + auth setup.
+   * Keep portfolio tests under tests/app/automationexercise/** enabled.
+   */
+  testIgnore: [
+    /app\/auth\.setup\.ts/,
+    /app\/api\//,
+    /app\/e2e\//,
+    /app\/functional\//,
+  ],
 
-    /* Retry on CI only */
-    retries: process.env.CI ? 2 : 0,
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
 
-    /* Limit parallel workers on CI for stability */
-    workers: process.env.CI ? 1 : undefined,
+  reporter: process.env.CI
+    ? [['blob'], ['html', { open: 'never' }]]
+    : [['html', { open: 'on-failure' }]],
 
-    /* Reporter configuration */
-    reporter: process.env.CI
-        ? [['blob'], ['html', { open: 'never' }]]
-        : [['html', { open: 'on-failure' }]],
+  use: {
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    actionTimeout: 10_000,
+    navigationTimeout: 30_000,
+  },
 
-    /* Shared settings for all projects */
-    use: {
-        /* Base URL - uncomment and set if using relative URLs */
-        // baseURL: process.env.APP_URL,
+  timeout: 60_000,
+  expect: { timeout: 10_000 },
 
-        /* Collect trace when retrying the failed test */
-        trace: 'on-first-retry',
-
-        /* Screenshot on failure */
-        screenshot: 'only-on-failure',
-
-        /* Video on failure */
-        video: 'retain-on-failure',
-
-        /* Action timeout */
-        actionTimeout: 10000,
-
-        /* Navigation timeout */
-        navigationTimeout: 30000,
+  projects: [
+    /**
+     * Portfolio project: public sites (no auth storage state).
+     * Runs your AutomationExercise tests.
+     */
+    {
+      name: 'public-chromium',
+      testMatch: [/app\/automationexercise\/.*\.spec\.ts/],
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
     },
 
-    /* Test timeout */
-    timeout: 60000,
-
-    /* Expect timeout */
-    expect: {
-        timeout: 10000,
+    /**
+     * Scaffold auth setup project (kept for later use).
+     * Will run only *.setup.ts files (currently ignored by testIgnore anyway).
+     */
+    {
+      name: 'setup',
+      testMatch: [/.*\.setup\.ts/],
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 1920, height: 1080 },
+      },
     },
 
-    /* Configure projects */
-    projects: [
-        /* Setup project - runs before main tests */
-        {
-
-          
-
-            name: 'setup',
-            use: {
-                ...devices['Desktop Chrome'],
-                viewport: { width: 1920, height: 1080 },
-            },
-            testMatch: /.*\.setup\.ts/,
-        },
-
-        /* Main test project - Chrome */
-        {
-            name: 'chromium',
-            use: {
-                ...devices['Desktop Chrome'],
-                storageState: StorageStatePaths.APP,
-                viewport: { width: 1920, height: 1080 },
-            },
-            dependencies: ['setup'],
-        },
-
-        /* Firefox - commented out by default */
-        // {
-        //     name: 'firefox',
-        //     use: {
-        //         ...devices['Desktop Firefox'],
-        //         storageState: '.auth/app/appStorageState.json',
-        //     },
-        //     dependencies: ['setup'],
-        // },
-
-        /* WebKit - commented out by default */
-        // {
-        //     name: 'webkit',
-        //     use: {
-        //         ...devices['Desktop Safari'],
-        //         storageState: '.auth/app/appStorageState.json',
-        //     },
-        //     dependencies: ['setup'],
-        // },
-    ],
+    /**
+     * Scaffold "authenticated" project (kept for later use).
+     */
+    {
+      name: 'chromium',
+      testMatch: [/app\/(api|e2e|functional)\/.*\.spec\.ts/],
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: StorageStatePaths.APP,
+        viewport: { width: 1920, height: 1080 },
+      },
+      dependencies: ['setup'],
+    },
+  ],
 });
