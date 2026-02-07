@@ -1,13 +1,17 @@
-import { expect, test } from '../../.././fixtures/pom/test-options';
+import { expect, test } from '../../../fixtures/pom/test-options';
 
 test.describe('expandtesting api - health', () => {
-  test('should return 200', { tag: ['@smoke', '@api'] }, async ({ apiRequest }) => {
-    const { status } = await apiRequest({
-      method: 'GET',
-      url: '/health',
-      baseUrl: process.env.API_URL,
-    });
+  test(
+    'should return 200',
+    { tag: ['@smoke', '@api'] },
+    async ({ apiRequest }) => {
+      const { status } = await apiRequest({
+        method: 'GET',
+        url: '/health-check',
+        baseUrl: process.env.API_URL,
+      });
 
-    expect(status).toBe(200);
-  });
+      expect(status).toBe(200);
+    }
+  );
 });

@@ -65,7 +65,7 @@ export default defineConfig({
         
         {
             name: 'public-api',
-            testMatch: [/app\/expandtesting\/api\/.*\.spec\.ts/],
+              testMatch: [/expandtesting\/api\/.*\.spec\.ts/],
             use: {},
             },
 
