@@ -33,8 +33,12 @@ export default defineConfig({
     workers: process.env.CI ? 1 : undefined,
 
     reporter: process.env.CI
-        ? [['blob'], ['html', { open: 'never' }]]
-        : [['html', { open: 'on-failure' }]],
+        ? [
+              ['list'],
+              ['html', { open: 'never' }],
+              ['junit', { outputFile: 'test-results/junit.xml' }],
+          ]
+        : [['html', { open: 'never' }]],
 
     use: {
         trace: 'on-first-retry',

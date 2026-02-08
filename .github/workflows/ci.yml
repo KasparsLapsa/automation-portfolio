@@ -9,6 +9,11 @@ on:
     - cron: "0 2 * * *" # nightly 02:00 UTC
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -24,7 +29,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     env:
-      # Big CI speed-up for API-only runs
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
     steps:
       - uses: actions/checkout@v4
@@ -55,6 +59,9 @@ jobs:
     name: UI tests (public-chromium)
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
 
@@ -88,3 +95,20 @@ jobs:
             test-results/**
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Prepare report for Pages
+        if: always()
+        run: |
+          mkdir -p public
+          cp -r playwright-report/* public/ || true
+
+      - name: Upload Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+      - name: Deploy to GitHub Pages
+        if: always()
+        id: deployment
+        uses: actions/deploy-pages@v4
