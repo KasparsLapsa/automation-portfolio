@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
 export const CarSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  price: z.string(),
-  image: z.string(),
+    id: z.number(),
+    name: z.string(),
+    price: z.string(),
+    image: z.string(),
 });
 
 export const CarsResponseSchema = z.object({
-  status: z.string(),
-  cars: z.array(CarSchema),
+    status: z.string(),
+    cars: z.array(CarSchema),
 });
 
 export type Car = z.infer<typeof CarSchema>;

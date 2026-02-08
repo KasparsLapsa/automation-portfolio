@@ -59,17 +59,13 @@ export default defineConfig({
                 ...devices['Desktop Chrome'],
                 viewport: { width: 1920, height: 1080 },
             },
-
-            
         },
-        
+
         {
             name: 'public-api',
-              testMatch: [/expandtesting\/api\/.*\.spec\.ts/],
+            testMatch: [/expandtesting\/api\/.*\.spec\.ts/],
             use: {},
-            },
-
-
+        },
 
         /**
          * Scaffold auth setup project (kept for later use).

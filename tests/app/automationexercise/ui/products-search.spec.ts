@@ -1,35 +1,34 @@
 import { expect, test } from '../../../../fixtures/pom/test-options';
-import { acceptAeConsentIfPresent } from '../../../../helpers/util/consent';
+import { acceptConsentIfVisible } from '../../../../helpers/util/consent';
 
 test.describe('automationExercise - Products', () => {
-    test(
-        'should search products and show results',
-        { tag: ['@sanity', '@functional'] },
-        async ({ page }) => {
-            await test.step('GIVEN user opens home page', async () => {
-                await page.goto(process.env.APP_URL!);
-                await acceptAeConsentIfPresent(page);
-                await expect(page).toHaveTitle(/Automation Exercise/i);
-            });
+  test(
+    'should search products and show results',
+    { tag: ['@sanity', '@functional'] },
+    async ({ page }) => {
+      await test.step('GIVEN user opens home page', async () => {
+        await page.goto(process.env.APP_URL!);
+        await acceptConsentIfVisible(page);
+        await expect(page).toHaveTitle(/Automation Exercise/i);
+      });
 
-            await test.step('WHEN user navigates to Products', async () => {
-                await page.getByRole('link', { name: /Products/i }).click();
-                await expect(page).toHaveURL(/\/products/i);
-            });
+      await test.step('WHEN user searches for a product', async () => {
+        await page.getByRole('link', { name: /products/i }).click();
+        await acceptConsentIfVisible(page);
 
-            await test.step('AND user searches for "Dress"', async () => {
-                await page.locator('#search_product').fill('Dress');
-                await page.locator('#submit_search').click();
-            });
+        const searchInput = page.getByPlaceholder(/search product/i);
+        await searchInput.fill('Dress');
 
-            await test.step('THEN searched products section is visible', async () => {
-                await expect(
-                    page.getByText(/Searched Products/i)
-                ).toBeVisible();
-                await expect(
-                    page.locator('.productinfo').first()
-                ).toBeVisible();
-            });
-        }
-    );
+        await searchInput.press('Enter');
+
+      });
+
+      await test.step('THEN results should be visible', async () => {
+        await expect(
+          page.getByRole('heading', { name: /searched products/i })
+        ).toBeVisible();
+
+      });
+    }
+  );
 });

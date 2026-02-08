@@ -28,7 +28,6 @@
         "test:portfolio:sanity": "npx playwright test --grep \"@sanity\" --project \"public-chromium\"",
         "test:portfolio:api:smoke": "npx playwright test --grep \"@smoke\" --project \"public-api\"",
         "test:portfolio:api:sanity": "npx playwright test --grep \"@sanity\" --project \"public-api\""
-        
     },
     "keywords": [],
     "author": "",

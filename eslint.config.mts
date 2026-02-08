@@ -36,12 +36,18 @@ const playwrightRecommendedRules =
  */
 const config = [
     {
-        ignores: ['node_modules', 'dist', 'playwright-report', 'test-results','tests/app/auth.setup.ts',
-      'tests/app/api/**',
-      'tests/app/e2e/**',
-      'tests/app/functional/**',
-      'helpers/app/**',
-      'pages/app/**',],
+        ignores: [
+            'node_modules',
+            'dist',
+            'playwright-report',
+            'test-results',
+            'tests/app/auth.setup.ts',
+            'tests/app/api/**',
+            'tests/app/e2e/**',
+            'tests/app/functional/**',
+            'helpers/app/**',
+            'pages/app/**',
+        ],
     },
     {
         files: ['**/*.ts', '**/*.tsx'],

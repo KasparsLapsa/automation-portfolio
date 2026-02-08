@@ -1,5 +1,5 @@
 import { expect, test } from '../../../../fixtures/pom/test-options';
-import { acceptAeConsentIfPresent } from '../../../../helpers/util/consent';
+import { acceptConsentIfVisible } from '../../../../helpers/util/consent';
 
 test.describe('automationExercise - smoke', () => {
     test(
@@ -8,7 +8,7 @@ test.describe('automationExercise - smoke', () => {
         async ({ page }) => {
             await test.step('GIVEN the user opens AutomationExercise', async () => {
                 await page.goto(process.env.APP_URL!);
-                await acceptAeConsentIfPresent(page);
+                await acceptConsentIfVisible(page);
             });
 
             await test.step('THEN the home page title should be correct', async () => {
