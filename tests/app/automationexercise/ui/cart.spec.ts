@@ -21,7 +21,6 @@ test.describe('automationExercise - Cart', () => {
         await productDetails.addToCartAndContinueShopping();
       });
 
-      // Optional portfolio-worthy assertion (recommended):
       await test.step('THEN cart contains the product', async () => {
         await page.getByRole('link', { name: /cart/i }).click();
         await expect(page).toHaveURL(/\/view_cart/i);
