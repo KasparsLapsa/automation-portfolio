@@ -1,38 +1,32 @@
 import { expect, test } from '../../../../fixtures/pom/test-options';
 import { acceptConsentIfVisible } from '../../../../helpers/util/consent';
-import { clickIfVisible } from '../../../../helpers/util/ui';
+import { ProductDetailsPage } from '../../../../pages/automationexercise/product-details.page';
 
 test.describe('automationExercise - Cart', () => {
-    test(
-        'should add a product to cart',
-        { tag: ['@smoke', '@e2e'] },
-        async ({ page }) => {
-            await test.step('GIVEN user is on Products page', async () => {
-                await page.goto(`${process.env.APP_URL!}/products`);
-                await acceptConsentIfVisible(page);
-                await expect(page).toHaveURL(/\/products/i);
-            });
+  test(
+    'should add a product to cart',
+    { tag: ['@smoke', '@e2e'] },
+    async ({ page }) => {
+      const productDetails = new ProductDetailsPage(page);
 
-            await test.step('WHEN user opens a product and adds it to cart', async () => {
-                // Open Blue Top product details directly (stable)
-                await page.goto(`${process.env.APP_URL!}/product_details/1`);
-                await acceptConsentIfVisible(page);
+      await test.step('GIVEN user is on Products page', async () => {
+        await page.goto(`${process.env.APP_URL!}/products`);
+        await acceptConsentIfVisible(page);
+        await expect(page).toHaveURL(/\/products/i);
+      });
 
-                // Make sure we really opened the right product
-                await expect(
-                    page.getByText('Blue Top', { exact: true })
-                ).toBeVisible();
+      await test.step('WHEN user opens a product and adds it to cart', async () => {
+        await productDetails.gotoById(1);
+        await productDetails.expectProductNameVisible('Blue Top');
+        await productDetails.addToCartAndContinueShopping();
+      });
 
-                // Add to cart (on details page this is typically unique)
-                await page
-                    .getByRole('button', { name: /add to cart/i })
-                    .click();
-
-                // Continue shopping modal (if it appears)
-                await clickIfVisible(
-                    page.getByRole('button', { name: /continue shopping/i })
-                );
-            });
-        }
-    );
+      // Optional portfolio-worthy assertion (recommended):
+      await test.step('THEN cart contains the product', async () => {
+        await page.getByRole('link', { name: /cart/i }).click();
+        await expect(page).toHaveURL(/\/view_cart/i);
+        await expect(page.getByText('Blue Top', { exact: true })).toBeVisible();
+      });
+    }
+  );
 });
