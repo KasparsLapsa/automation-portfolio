@@ -41,6 +41,7 @@ export default defineConfig({
         : [['html', { open: 'never' }]],
 
     use: {
+        testIdAttribute: 'data-qa',
         trace: 'on-first-retry',
         screenshot: 'only-on-failure',
         video: 'retain-on-failure',

@@ -12,11 +12,13 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 ## What’s inside
 
 ### UI (AutomationExercise) — `public-chromium`
+
 - Smoke + basic flows
 - Consent/cookie handling
 - Playwright best practices (auto-waits, assertions, stable selectors)
 
 ### API (ExpandTesting) — `public-api`
+
 - Fast API tests with **contract validation** using **Zod**
 - Positive + negative cases (200 contract + 400 error contract)
 - Business assertions (e.g., conversion math)
@@ -30,6 +32,8 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 ## Quick start
 
 ### Install
+
 ```bash
 npm ci
 npx playwright install
+```

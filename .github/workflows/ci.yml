@@ -1,114 +1,114 @@
 name: CI
 
 on:
-  push:
-    branches: [main, master]
-  pull_request:
-    branches: [main, master]
-  schedule:
-    - cron: "0 2 * * *" # nightly 02:00 UTC
-  workflow_dispatch:
+    push:
+        branches: [main, master]
+    pull_request:
+        branches: [main, master]
+    schedule:
+        - cron: '0 2 * * *' # nightly 02:00 UTC
+    workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+    contents: read
+    pages: write
+    id-token: write
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
-  APP_URL: https://automationexercise.com
-  API_URL: https://practice.expandtesting.com/api
+    NODE_VERSION: '20'
+    APP_URL: https://automationexercise.com
+    API_URL: https://practice.expandtesting.com/api
 
 jobs:
-  api:
-    name: API tests (public-api)
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'pull_request'
-    env:
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
-    steps:
-      - uses: actions/checkout@v4
+    api:
+        name: API tests (public-api)
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        env:
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Run API tests
-        run: npm run test:portfolio:api
+            - name: Run API tests
+              run: npm run test:portfolio:api
 
-      - name: Upload artifacts (API)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-artifacts
-          path: |
-            playwright-report/**
-            test-results/**
-          if-no-files-found: ignore
-          retention-days: 7
+            - name: Upload artifacts (API)
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: api-artifacts
+                  path: |
+                      playwright-report/**
+                      test-results/**
+                  if-no-files-found: ignore
+                  retention-days: 7
 
-  ui:
-    name: UI tests (public-chromium)
-    runs-on: ubuntu-latest
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - uses: actions/checkout@v4
+    ui:
+        name: UI tests (public-chromium)
+        runs-on: ubuntu-latest
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        environment:
+            name: github-pages
+            url: ${{ steps.deployment.outputs.page_url }}
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+            - name: Cache Playwright browsers
+              uses: actions/cache@v4
+              with:
+                  path: ~/.cache/ms-playwright
+                  key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
 
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+            - name: Install Playwright browsers
+              run: npx playwright install --with-deps chromium
 
-      - name: Run UI tests
-        run: npm run test:portfolio:ui
+            - name: Run UI tests
+              run: npm run test:portfolio:ui
 
-      - name: Upload artifacts (UI)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-artifacts
-          path: |
-            playwright-report/**
-            test-results/**
-          if-no-files-found: ignore
-          retention-days: 14
+            - name: Upload artifacts (UI)
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ui-artifacts
+                  path: |
+                      playwright-report/**
+                      test-results/**
+                  if-no-files-found: ignore
+                  retention-days: 14
 
-      - name: Prepare report for Pages
-        if: always()
-        run: |
-          mkdir -p public
-          cp -r playwright-report/* public/ || true
+            - name: Prepare report for Pages
+              if: always()
+              run: |
+                  mkdir -p public
+                  cp -r playwright-report/* public/ || true
 
-      - name: Upload Pages artifact
-        if: always()
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: public
+            - name: Upload Pages artifact
+              if: always()
+              uses: actions/upload-pages-artifact@v3
+              with:
+                  path: public
 
-      - name: Deploy to GitHub Pages
-        if: always()
-        id: deployment
-        uses: actions/deploy-pages@v4
+            - name: Deploy to GitHub Pages
+              if: always()
+              id: deployment
+              uses: actions/deploy-pages@v4
