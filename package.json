@@ -33,6 +33,7 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
+        "@axe-core/playwright": "^4.11.1",
         "@faker-js/faker": "^9.9.0",
         "@playwright/test": "^1.58.0",
         "@types/node": "^24.0.1",
@@ -44,9 +45,9 @@
         "eslint-plugin-playwright": "^2.2.0",
         "eslint-plugin-prettier": "^5.5.0",
         "husky": "^9.1.7",
+        "is-ci": "^4.1.0",
         "jiti": "^2.4.2",
-        "lint-staged": "^16.1.2",
-        "is-ci": "^4.1.0"
+        "lint-staged": "^16.1.2"
     },
     "dependencies": {
         "dotenv": "^16.5.0",
