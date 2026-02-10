@@ -1,6 +1,6 @@
-import { expect, test } from '../../../../fixtures/pom/test-options';
-import { acceptConsentIfVisible } from '../../../../helpers/util/consent';
-import { ProductDetailsPage } from '../../../../pages/automationexercise/product-details.page';
+import { expect, test } from '../../../../../fixtures/pom/test-options';
+import { acceptConsentIfVisible } from '../../../../../helpers/util/consent';
+import { ProductDetailsPage } from '../../../../../pages/automationexercise/product-details.page';
 
 test.describe('automationExercise - Cart', () => {
     test(
