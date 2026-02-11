@@ -1,82 +1,98 @@
 import { defineConfig, devices } from '@playwright/test';
+import type { ReporterDescription } from '@playwright/test';
 import dotenv from 'dotenv';
-import { StorageStatePaths } from './enums/app/app';
+import path from 'node:path';
 
 const environment = process.env.ENVIRONMENT ?? 'dev';
-dotenv.config({ path: `./env/.env.${environment}` });
+dotenv.config({ path: path.join(process.cwd(), `env/.env.${environment}`) });
 
 const AE_STORAGE_STATE = 'storage/.auth/automationexercise.json';
+const isCI = !!process.env.CI;
+
+function buildReporter(): ReporterDescription[] {
+    const html: ReporterDescription = [
+        'html',
+        { open: 'never', outputFolder: 'playwright-report' },
+    ];
+    const junit: ReporterDescription = [
+        'junit',
+        { outputFile: 'test-results/junit.xml' },
+    ];
+    const list: ReporterDescription = ['list'];
+
+    const base: ReporterDescription[] = [html, junit];
+
+    if (process.env.RUN_SMART_REPORTER === '1') {
+        return [
+            list,
+            ...base,
+            ['playwright-smart-reporter', { outputDir: 'test-results/smart' }],
+        ];
+    }
+
+    return isCI ? [list, ...base] : [html];
+}
 
 export default defineConfig({
-  testDir: './tests',
+    testDir: './tests',
+    outputDir: 'test-results',
 
-  // Global ignore: keep non-portfolio scaffold areas out of runs
-  testIgnore: [/app\/auth\.setup\.ts/, /app\/api\//, /app\/e2e\//, /app\/functional\//],
+    reporter: buildReporter(),
 
-  fullyParallel: true,
-  forbidOnly: !!process.env.CI,
-  retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+    fullyParallel: true,
+    forbidOnly: isCI,
+    retries: isCI ? 2 : 0,
+    workers: isCI ? 1 : undefined,
 
-  reporter: process.env.CI
-    ? [['list'], ['html', { open: 'never' }], ['junit', { outputFile: 'test-results/junit.xml' }]]
-    : [['html', { open: 'never' }]],
+    timeout: 60_000,
+    expect: { timeout: 10_000 },
 
-  use: {
-    testIdAttribute: 'data-qa',
-    trace: 'on-first-retry',
-    screenshot: 'only-on-failure',
-    video: 'retain-on-failure',
-    actionTimeout: 10_000,
-    navigationTimeout: 30_000,
-  },
+    use: {
+        baseURL: process.env.APP_URL,
+        testIdAttribute: 'data-qa',
 
-  timeout: 60_000,
-  expect: { timeout: 10_000 },
+        trace: 'on-first-retry',
+        screenshot: 'only-on-failure',
+        video: 'retain-on-failure',
 
-  projects: [
-    {
-      name: 'setup',
-      testMatch: [/app\/automationexercise\/setup\/.*\.setup\.ts/],
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
+        actionTimeout: 10_000,
+        navigationTimeout: 30_000,
+
+        locale: 'en-US',
+        timezoneId: 'Europe/Riga',
     },
 
-    {
-      name: 'ae-guest',
-      testMatch: [/app\/automationexercise\/.*\.spec\.ts/],
-      testIgnore: [
-        /app\/automationexercise\/auth\/.*\.spec\.ts/,
-        /app\/automationexercise\/setup\/.*\.setup\.ts/,
-      ],
-      use: { ...devices['Desktop Chrome'], viewport: { width: 1920, height: 1080 } },
-    },
-
-    {
-      name: 'ae-auth',
-      testMatch: [/app\/automationexercise\/auth\/.*\.spec\.ts/],
-      dependencies: ['setup'],
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        storageState: AE_STORAGE_STATE,
-      },
-    },
-
-    {
-      name: 'public-api',
-      testMatch: [/expandtesting\/api\/.*\.spec\.ts/],
-      use: {},
-    },
-
-    {
-      name: 'chromium',
-      testMatch: [/app\/(api|e2e|functional)\/.*\.spec\.ts/],
-      dependencies: ['setup'],
-      use: {
-        ...devices['Desktop Chrome'],
-        viewport: { width: 1920, height: 1080 },
-        storageState: StorageStatePaths.APP,
-      },
-    },
-  ],
+    projects: [
+        {
+            name: 'setup',
+            testMatch: [/app\/automationexercise\/setup\/.*\.setup\.ts/],
+            use: {
+                ...devices['Desktop Chrome'],
+                viewport: { width: 1920, height: 1080 },
+            },
+        },
+        {
+            name: 'ae-guest',
+            testMatch: [/app\/automationexercise\/ui\/.*\.spec\.ts/],
+            use: {
+                ...devices['Desktop Chrome'],
+                viewport: { width: 1920, height: 1080 },
+            },
+        },
+        {
+            name: 'ae-auth',
+            testMatch: [/app\/automationexercise\/auth\/.*\.spec\.ts/],
+            dependencies: ['setup'],
+            use: {
+                ...devices['Desktop Chrome'],
+                viewport: { width: 1920, height: 1080 },
+                storageState: AE_STORAGE_STATE,
+            },
+        },
+        {
+            name: 'public-api',
+            testMatch: [/expandtesting\/api\/.*\.spec\.ts/],
+            use: {},
+        },
+    ],
 });

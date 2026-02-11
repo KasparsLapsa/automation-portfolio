@@ -24,11 +24,9 @@ test.describe('expandtesting api - currency convert', () => {
             expect(parsed.to).toBe(to);
             expect(parsed.amount).toBe(amount);
 
-            // sanity checks
             expect(parsed.rate).toBeGreaterThan(0);
             expect(parsed.converted).toBeGreaterThan(0);
 
-            // business math check (allow tiny floating differences)
             expect(parsed.converted).toBeCloseTo(
                 parsed.amount * parsed.rate,
                 5

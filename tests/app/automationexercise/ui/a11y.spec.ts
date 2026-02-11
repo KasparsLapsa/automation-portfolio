@@ -16,7 +16,6 @@ test.describe('automationExercise - a11y', () => {
 
             await test.step('WHEN axe scan runs', async () => {
                 const results = await new AxeBuilder({ page })
-                    // optional: reduce noise on demo sites
                     .disableRules(['color-contrast'])
                     .analyze();
 

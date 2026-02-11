@@ -19,7 +19,6 @@ test.describe('expandtesting api - time', () => {
 
             const parsed = TimeResponseSchema.parse(body);
 
-            // basic sanity: ISO-ish timestamp (not perfect, but practical)
             expect(parsed.time).toMatch(/^\d{4}-\d{2}-\d{2}T/);
         }
     );
