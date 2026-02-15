@@ -9,15 +9,6 @@ dotenv.config({ path: path.join(process.cwd(), `env/.env.${environment}`) });
 const AE_STORAGE_STATE = 'storage/.auth/automationexercise.json';
 const isCI = !!process.env.CI;
 
-/**
- * Reporters
- * - Local default: HTML report only
- * - CI default: list + html + junit
- * - Optional Smart Reporter (set RUN_SMART_REPORTER=1) to get multi-run history
- *
- * Smart Reporter history persists via tests/smart-history.json
- * (Do not delete this file if you want trends across runs.)
- */
 function buildReporter(): ReporterDescription[] {
   const html: ReporterDescription = [
     'html',
@@ -34,22 +25,19 @@ function buildReporter(): ReporterDescription[] {
   const smart: ReporterDescription = [
     'playwright-smart-reporter',
     {
-      outputFile: 'tests/smart-report.html',
-      historyFile: 'tests/smart-history.json',
+      outputFile: 'test-results/smart-report.html',
+      historyFile: 'test-results/smart-history.json',
       maxHistoryRuns: 20,
       enableHistoryDrilldown: true,
     },
   ];
 
-  // Base set used in CI (and optionally locally when you want "full" output)
   const ciBase: ReporterDescription[] = [list, html, junit];
 
-  // If Smart Reporter is enabled, include it (both local + CI)
   if (process.env.RUN_SMART_REPORTER === '1') {
     return isCI ? [...ciBase, smart] : [html, smart];
   }
 
-  // Default: CI gets more logging; local stays simple
   return isCI ? ciBase : [html];
 }
 
@@ -71,7 +59,6 @@ export default defineConfig({
     baseURL: process.env.APP_URL,
     testIdAttribute: 'data-qa',
 
-    // Better for debugging + portfolio (keeps evidence)
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
