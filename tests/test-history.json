@@ -1,0 +1,127 @@
+{
+    "runs": [],
+    "tests": {
+        "[ae-guest] app\\automationexercise\\ui\\auth\\cart.spec.ts::should add a product to cart": [
+            {
+                "passed": true,
+                "duration": 11677,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[ae-guest] app\\automationexercise\\ui\\e2e-checkout-start.spec.ts::should signup, add product to cart, and reach checkout": [
+            {
+                "passed": true,
+                "duration": 16443,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[ae-guest] app\\automationexercise\\ui\\a11y.spec.ts::should run an accessibility scan on Home": [
+            {
+                "passed": true,
+                "duration": 17516,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[ae-guest] app\\automationexercise\\ui\\smoke.spec.ts::should load home page": [
+            {
+                "passed": true,
+                "duration": 3849,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[ae-guest] app\\automationexercise\\ui\\products-search.spec.ts::should search products and show results": [
+            {
+                "passed": true,
+                "duration": 9202,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[setup] app\\automationexercise\\setup\\auth.setup.ts::should create logged-in storage state": [
+            {
+                "passed": true,
+                "duration": 24123,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\currency-convert-negative.spec.ts::should return 400 for invalid amount": [
+            {
+                "passed": true,
+                "duration": 527,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\status-code.spec.ts::should return 404 for unknown endpoint": [
+            {
+                "passed": true,
+                "duration": 147,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\cars.spec.ts::should return cars payload matching contract": [
+            {
+                "passed": true,
+                "duration": 429,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\time.spec.ts::should return valid time payload": [
+            {
+                "passed": true,
+                "duration": 238,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\health.spec.ts::should return 200": [
+            {
+                "passed": true,
+                "duration": 430,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ],
+        "[public-api] expandtesting\\api\\currency-convert.spec.ts::should convert currency and match contract": [
+            {
+                "passed": true,
+                "duration": 413,
+                "timestamp": "2026-02-11T10:55:51.765Z",
+                "skipped": false,
+                "retry": 0
+            }
+        ]
+    },
+    "summaries": [
+        {
+            "runId": "run-1770807312880",
+            "timestamp": "2026-02-11T10:55:12.880Z",
+            "total": 12,
+            "passed": 12,
+            "failed": 0,
+            "skipped": 0,
+            "flaky": 0,
+            "slow": 0,
+            "duration": 38881,
+            "passRate": 100
+        }
+    ]
+}

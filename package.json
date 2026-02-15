@@ -15,7 +15,11 @@
         "report": "playwright show-report",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "test:visual": "npx playwright test --project=ae-guest --grep @visual",
+        "test:visual:update": "npx playwright test --project=ae-guest --grep @visual --update-snapshots",
+        "test:portfolio:ui": "npm run test:ae:guest",
+        "test:portfolio:api": "npm run test:api"
     },
     "devDependencies": {
         "@axe-core/playwright": "^4.11.1",
