@@ -1,6 +1,18 @@
 {
+    "name": "automation-portfolio-playwright",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Automation Portfolio - Playwright + TypeScript (UI + API)",
     "scripts": {
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix",
+        "format:check": "prettier . --check",
+        "format:fix": "prettier . --write",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "check": "npm run format:check && npm run lint && npm run typecheck",
+        "check:fix": "npm run format:fix && npm run lint:fix",
         "test": "playwright test --grep-invert @destructive",
+        "test:all": "npm run test",
         "test:ae:setup": "playwright test --project=setup",
         "test:ae:guest": "playwright test --project=ae-guest --grep-invert @destructive",
         "test:ae:auth": "playwright test --project=ae-auth --grep-invert @destructive",
@@ -8,21 +20,28 @@
         "test:smoke:auth": "playwright test --project=ae-auth --grep @smoke",
         "test:smoke": "playwright test --grep @smoke --grep-invert @destructive",
         "test:api": "playwright test --project=public-api",
-        "test:ci": "playwright test --workers=1 --reporter=list",
+        "test:ci": "playwright test --grep-invert @destructive --workers=1 --reporter=line",
+        "test:ci:html": "playwright test --grep-invert @destructive --workers=1 --reporter=html",
         "test:headed": "playwright test --headed --grep-invert @destructive",
         "test:ui": "playwright test --ui",
         "test:debug": "playwright test --debug",
         "report": "playwright show-report",
-        "lint": "eslint .",
-        "lint:fix": "eslint . --fix",
-        "format": "prettier --write .",
-        "test:visual": "npx playwright test --project=ae-guest --grep @visual",
-        "test:visual:update": "npx playwright test --project=ae-guest --grep @visual --update-snapshots",
+        "test:visual": "playwright test --project=ae-guest --grep @visual",
+        "test:visual:update": "playwright test --project=ae-guest --grep @visual --update-snapshots",
         "test:portfolio:ui": "npm run test:ae:guest",
         "test:portfolio:api": "npm run test:api"
     },
+    "lint-staged": {
+        "*.{ts,tsx,js}": [
+            "eslint --fix"
+        ],
+        "*.{ts,tsx,js,json,md,yml,yaml}": [
+            "prettier --write"
+        ]
+    },
     "devDependencies": {
         "@axe-core/playwright": "^4.11.1",
+        "@faker-js/faker": "^9.9.0",
         "@playwright/test": "^1.58.2",
         "@typescript-eslint/eslint-plugin": "^8.55.0",
         "@typescript-eslint/parser": "^8.55.0",
@@ -33,7 +52,8 @@
         "eslint-plugin-prettier": "^5.5.5",
         "jiti": "^2.6.1",
         "playwright-smart-reporter": "^1.0.8",
-        "prettier": "^3.8.1"
+        "prettier": "^3.8.1",
+        "typescript": "^5.7.3"
     },
     "dependencies": {
         "zod": "^3.25.76"
