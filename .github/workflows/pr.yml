@@ -1,55 +1,55 @@
 name: PR - checks + API
 
 on:
-  pull_request:
-    branches: [main, master]
-  push:
-    branches: [main, master]
-  workflow_dispatch:
+    pull_request:
+        branches: [main, master]
+    push:
+        branches: [main, master]
+    workflow_dispatch:
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: pr-${{ github.ref }}
-  cancel-in-progress: true
+    group: pr-${{ github.ref }}
+    cancel-in-progress: true
 
 env:
-  NODE_VERSION: "20"
-  APP_URL: https://automationexercise.com
-  API_URL: https://practice.expandtesting.com/api
+    NODE_VERSION: '20'
+    APP_URL: https://automationexercise.com
+    API_URL: https://practice.expandtesting.com/api
 
 jobs:
-  checks_api:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
+    checks_api:
+        runs-on: ubuntu-latest
+        timeout-minutes: 20
+        env:
+            PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: ${{ env.NODE_VERSION }}
+                  cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Check (format/lint/typecheck)
-        run: npm run check
+            - name: Check (format/lint/typecheck)
+              run: npm run check
 
-      - name: Run API tests
-        run: npm run test:api
+            - name: Run API tests
+              run: npm run test:api
 
-      - name: Upload artifacts (API)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-artifacts
-          path: |
-            playwright-report/**
-            test-results/**
-          if-no-files-found: ignore
-          retention-days: 7
+            - name: Upload artifacts (API)
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                  name: api-artifacts
+                  path: |
+                      playwright-report/**
+                      test-results/**
+                  if-no-files-found: ignore
+                  retention-days: 7
