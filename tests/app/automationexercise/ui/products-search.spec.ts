@@ -5,7 +5,7 @@ import { ProductsPage } from '../../../../pages/automationexercise/products.page
 test.describe('automationExercise - Products', () => {
     test(
         'should search products and show results',
-        { tag: ['@sanity', '@functional'] },
+        { tag: ['@sanity', '@functional', '@flaky'] },
         async ({ page }) => {
             const home = new HomePage(page);
             const products = new ProductsPage(page);
