@@ -42,6 +42,10 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 ### Latest UI report
 https://kasparslapsa.github.io/automation-portfolio/
 
+### Smart reporter
+
+- Smart Reporter (local): set RUN_SMART_REPORTER=1 to generate tests/smart-report.html with run history.”
+
 ---
 
 ## Quick start
