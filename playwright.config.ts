@@ -25,8 +25,8 @@ function buildReporter(): ReporterDescription[] {
   const smart: ReporterDescription = [
     'playwright-smart-reporter',
     {
-      outputFile: 'test-results/smart-report.html',
-      historyFile: 'test-results/smart-history.json',
+      outputFile: 'smart-report.html',
+      historyFile: 'smart-history.json',
       maxHistoryRuns: 20,
       enableHistoryDrilldown: true,
     },
