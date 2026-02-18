@@ -41,6 +41,32 @@ function buildReporter(): ReporterDescription[] {
   return isCI ? ciBase : [html];
 }
 
+// Enforce APP_URL only when UI projects are involved.
+// If user runs only `--project=public-api`, APP_URL is not required.
+function requiresAppUrl(argv: string[]): boolean {
+  const uiProjects = new Set(['setup', 'ae-guest', 'ae-auth']);
+  const projectArgs: string[] = [];
+
+  for (let i = 0; i < argv.length; i += 1) {
+    const a = argv[i];
+    if (a === '--project' && argv[i + 1]) projectArgs.push(argv[i + 1]);
+    if (a.startsWith('--project=')) projectArgs.push(a.split('=')[1] ?? '');
+  }
+
+  // If no project specified => all projects run => UI requires APP_URL
+  if (projectArgs.length === 0) return true;
+
+  return projectArgs.some((p) => uiProjects.has(p));
+}
+
+const baseURL = process.env.APP_URL;
+
+if (requiresAppUrl(process.argv) && !baseURL) {
+  throw new Error(
+    'APP_URL is not set. UI projects (setup/ae-guest/ae-auth) require APP_URL.'
+  );
+}
+
 export default defineConfig({
   testDir: './tests',
   outputDir: 'test-results',
@@ -56,7 +82,7 @@ export default defineConfig({
   expect: { timeout: 10_000 },
 
   use: {
-    baseURL: process.env.APP_URL,
+    baseURL: baseURL, // may be undefined for API-only runs
     testIdAttribute: 'data-qa',
 
     trace: 'retain-on-failure',

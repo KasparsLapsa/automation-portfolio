@@ -83,11 +83,8 @@ export class AppPage {
      * @returns {Promise<void>} Resolves when navigation is complete.
      */
     async openHomePage(): Promise<void> {
-        await this.page.goto(process.env.APP_URL!, {
-            waitUntil: 'domcontentloaded',
-        });
-    }
-
+  await this.page.goto('/', { waitUntil: 'domcontentloaded' });
+}
     /**
      * Performs login with the provided credentials and waits for login response.
      * Fills in the email and password fields, clicks the login button,

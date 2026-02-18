@@ -1,124 +1,114 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 import { acceptConsentIfVisible } from '../../helpers/util/consent';
+import type { Consent } from '../../src/types';
+
+function defaultConsent(page: Page): Consent {
+  return { acceptIfVisible: async () => acceptConsentIfVisible(page) };
+}
 
 export class HomePage {
-    readonly page: Page;
+  constructor(
+    private readonly page: Page,
+    private readonly consent: Consent = defaultConsent(page)
+  ) {}
 
-    // Top nav
-    readonly header: Locator;
-    readonly homeLink: Locator;
-    readonly productsLink: Locator;
-    readonly cartLink: Locator;
-    readonly signupLoginLink: Locator;
-    readonly testCasesLink: Locator;
-    readonly apiTestingLink: Locator;
-    readonly contactUsLink: Locator;
+  // Header (scope so we don't match footer)
+  get header(): Locator {
+    return this.page.getByRole('banner');
+  }
 
-    // Unique home page content (stable, not duplicated like the slider)
-    readonly categoryHeading: Locator;
-    readonly featuresItemsHeading: Locator;
-    readonly subscriptionHeading: Locator;
+  // Top nav
+  get homeLink(): Locator {
+    return this.header.getByRole('link', { name: /home/i });
+  }
+  get productsLink(): Locator {
+    return this.header.getByRole('link', { name: /products/i });
+  }
+  get cartLink(): Locator {
+    return this.header.getByRole('link', { name: /cart/i });
+  }
+  get signupLoginLink(): Locator {
+    return this.header.getByRole('link', { name: /signup\s*\/\s*login/i });
+  }
+  get testCasesLink(): Locator {
+    return this.header.getByRole('link', { name: /test cases/i });
+  }
+  get apiTestingLink(): Locator {
+    return this.header.getByRole('link', { name: /api testing/i });
+  }
+  get contactUsLink(): Locator {
+    return this.header.getByRole('link', { name: /contact us/i });
+  }
 
-    constructor(page: Page) {
-        this.page = page;
+  // Unique home content (stable)
+  get categoryHeading(): Locator {
+    return this.page.getByRole('heading', { name: /^category$/i });
+  }
+  get featuresItemsHeading(): Locator {
+    return this.page.getByRole('heading', { name: /^features items$/i });
+  }
+  get subscriptionHeading(): Locator {
+    return this.page.getByRole('heading', { name: /^subscription$/i });
+  }
 
-        // Scope to header so we don't match footer links
-        this.header = page.getByRole('banner');
+  async goto(): Promise<void> {
+    await this.page.goto('/');
+    await this.consent.acceptIfVisible();
+    await this.assertHomeReady();
+  }
 
-        this.homeLink = this.header.getByRole('link', { name: /home/i });
-        this.productsLink = this.header.getByRole('link', {
-            name: /products/i,
-        });
-        this.cartLink = this.header.getByRole('link', { name: /cart/i });
-        this.signupLoginLink = this.header.getByRole('link', {
-            name: /signup\s*\/\s*login/i,
-        });
-        this.testCasesLink = this.header.getByRole('link', {
-            name: /test cases/i,
-        });
-        this.apiTestingLink = this.header.getByRole('link', {
-            name: /api testing/i,
-        });
-        this.contactUsLink = this.header.getByRole('link', {
-            name: /contact us/i,
-        });
+  async assertHomeReady(): Promise<void> {
+    await expect(this.page).toHaveTitle(/automation exercise/i);
+    await expect(this.header).toBeVisible();
+    await expect(this.categoryHeading).toBeVisible();
+    await expect(this.featuresItemsHeading).toBeVisible();
+    await expect(this.subscriptionHeading).toBeVisible();
+  }
 
-        // These headings are unique on the page (unlike the carousel slide content)
-        this.categoryHeading = page.getByRole('heading', {
-            name: /^category$/i,
-        });
-        this.featuresItemsHeading = page.getByRole('heading', {
-            name: /^features items$/i,
-        });
-        this.subscriptionHeading = page.getByRole('heading', {
-            name: /^subscription$/i,
-        });
-    }
+  // Backwards-compat (so existing tests don't break immediately)
+  async expectLoaded(): Promise<void> {
+    await this.assertHomeReady();
+  }
 
-    async goto(): Promise<void> {
-        // If baseURL is configured -> "/" works. If not, fall back to APP_URL.
-        try {
-            await this.page.goto('/');
-        } catch {
-            const url = process.env.APP_URL;
-            if (!url)
-                throw new Error('baseURL is not set and APP_URL is missing');
-            await this.page.goto(url);
-        }
+  async goHome(): Promise<void> {
+    await this.homeLink.click();
+    await this.consent.acceptIfVisible();
+    await this.assertHomeReady();
+  }
 
-        await acceptConsentIfVisible(this.page);
-        await this.expectLoaded();
-    }
+  async goToProducts(): Promise<void> {
+    await this.productsLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/products/i);
+  }
 
-    async expectLoaded(): Promise<void> {
-        await expect(this.page).toHaveTitle(/automation exercise/i);
-        await expect(this.header).toBeVisible();
+  async goToCart(): Promise<void> {
+    await this.cartLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/view_cart/i);
+  }
 
-        // Proof home content is loaded (stable)
-        await expect(this.categoryHeading).toBeVisible();
-        await expect(this.featuresItemsHeading).toBeVisible();
-        await expect(this.subscriptionHeading).toBeVisible();
-    }
+  async goToSignupLogin(): Promise<void> {
+    await this.signupLoginLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/login/i);
+  }
 
-    async goHome(): Promise<void> {
-        await this.homeLink.click();
-        await acceptConsentIfVisible(this.page);
-        await this.expectLoaded();
-    }
+  async goToTestCases(): Promise<void> {
+    await this.testCasesLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/test_cases/i);
+  }
 
-    async goToProducts(): Promise<void> {
-        await this.productsLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/products/i);
-    }
+  async goToApiTesting(): Promise<void> {
+    await this.apiTestingLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/api_list/i);
+  }
 
-    async goToCart(): Promise<void> {
-        await this.cartLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/view_cart/i);
-    }
-
-    async goToSignupLogin(): Promise<void> {
-        await this.signupLoginLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/login/i);
-    }
-
-    async goToTestCases(): Promise<void> {
-        await this.testCasesLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/test_cases/i);
-    }
-
-    async goToApiTesting(): Promise<void> {
-        await this.apiTestingLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/api_list/i);
-    }
-
-    async goToContactUs(): Promise<void> {
-        await this.contactUsLink.click();
-        await acceptConsentIfVisible(this.page);
-        await expect(this.page).toHaveURL(/\/contact_us/i);
-    }
+  async goToContactUs(): Promise<void> {
+    await this.contactUsLink.click();
+    await this.consent.acceptIfVisible();
+    await expect(this.page).toHaveURL(/\/contact_us/i);
+  }
 }

@@ -1,39 +1,65 @@
 import { test as base } from '@playwright/test';
 import { AppPage } from '../../pages/app/app.page';
+import { acceptConsentIfVisible } from '../../helpers/util/consent';
+import type { Consent } from '../../src/types';
+
+import { HomePage } from '../../pages/automationexercise/home.page';
+import { AuthPage } from '../../pages/automationexercise/auth.page';
+import { ProductDetailsPage } from '../../pages/automationexercise/product-details.page';
+import { CartPage } from '../../pages/automationexercise/cart.page';
+import { CheckoutPage } from '../../pages/automationexercise/checkout.page';
+
+export type AePages = {
+  home: HomePage;
+  auth: AuthPage;
+  productDetails: ProductDetailsPage;
+  cart: CartPage;
+  checkout: CheckoutPage;
+};
 
 /**
  * Framework fixtures for page objects.
  * Add new page object types here as you create them.
  */
 export type FrameworkFixtures = {
-    /** Main application page object */
-    appPage: AppPage;
-    resetStorageState: () => Promise<void>;
+  /** Consent handler fixture */
+  consent: Consent;
+
+  /** Main application page object */
+  appPage: AppPage;
+
+  /** AutomationExercise POM bundle */
+  ae: AePages;
+
+  resetStorageState: () => Promise<void>;
 };
 
-/**
- * Extended test with page object fixtures.
- * Import this in your test files to access page objects.
- *
- * @example
- * ```ts
- * import { test, expect } from '../fixtures/pom/test-options';
- *
- * test('example test', async ({ appPage }) => {
- *   await appPage.openHomePage();
- *   await expect(appPage.appTitle).toBeVisible();
- * });
- * ```
- */
 export const test = base.extend<FrameworkFixtures>({
-    appPage: async ({ page }, use) => {
-        await use(new AppPage(page));
-    },
+  consent: async ({ page }, use) => {
+    await use({
+      acceptIfVisible: async () => acceptConsentIfVisible(page),
+    });
+  },
 
-    resetStorageState: async ({ context }, use) => {
-        await use(async () => {
-            await context.clearCookies();
-            await context.clearPermissions();
-        });
-    },
+  appPage: async ({ page }, use) => {
+    await use(new AppPage(page));
+  },
+
+  ae: async ({ page }, use) => {
+    // Centralized POM initialization (no more `new XPage(page)` in tests)
+    await use({
+      home: new HomePage(page),
+      auth: new AuthPage(page),
+      productDetails: new ProductDetailsPage(page),
+      cart: new CartPage(page),
+      checkout: new CheckoutPage(page),
+    });
+  },
+
+  resetStorageState: async ({ context }, use) => {
+    await use(async () => {
+      await context.clearCookies();
+      await context.clearPermissions();
+    });
+  },
 });
