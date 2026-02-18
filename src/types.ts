@@ -1,3 +1,3 @@
 export type Consent = {
-  acceptIfVisible: () => Promise<void>;
+    acceptIfVisible: () => Promise<void>;
 };

@@ -34,12 +34,13 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 ### Workflows
 
 - **PR / push** → runs **quality checks + API tests**
-  - `npm run check`
-  - `npm run test:api`
+    - `npm run check`
+    - `npm run test:api`
 
 - **Nightly + manual** → runs **UI tests** and publishes **Playwright HTML report** to GitHub Pages
 
 ### Latest UI report
+
 https://kasparslapsa.github.io/automation-portfolio/
 
 ### Smart reporter
@@ -51,9 +52,11 @@ https://kasparslapsa.github.io/automation-portfolio/
 ## Quick start
 
 ### Prerequisites
+
 - Node.js **20+**
 
 ### Install
+
 ```bash
 npm ci
 npx playwright install --with-deps chromium
@@ -88,3 +91,4 @@ npm run test:visual:update — update visual snapshots
 
 Notes
 UI tests run on GitHub-hosted runners, where third-party ads/popups can occasionally cause noise. The nightly workflow still publishes the report to Pages for debugging and visibility.
+```

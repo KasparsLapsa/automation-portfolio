@@ -10,11 +10,11 @@ import { CartPage } from '../../pages/automationexercise/cart.page';
 import { CheckoutPage } from '../../pages/automationexercise/checkout.page';
 
 export type AePages = {
-  home: HomePage;
-  auth: AuthPage;
-  productDetails: ProductDetailsPage;
-  cart: CartPage;
-  checkout: CheckoutPage;
+    home: HomePage;
+    auth: AuthPage;
+    productDetails: ProductDetailsPage;
+    cart: CartPage;
+    checkout: CheckoutPage;
 };
 
 /**
@@ -22,44 +22,42 @@ export type AePages = {
  * Add new page object types here as you create them.
  */
 export type FrameworkFixtures = {
-  /** Consent handler fixture */
-  consent: Consent;
+    /** Consent handler fixture */
+    consent: Consent;
 
-  /** Main application page object */
-  appPage: AppPage;
+    /** Main application page object */
+    appPage: AppPage;
 
-  /** AutomationExercise POM bundle */
-  ae: AePages;
+    /** AutomationExercise POM bundle */
+    ae: AePages;
 
-  resetStorageState: () => Promise<void>;
+    resetStorageState: () => Promise<void>;
 };
 
 export const test = base.extend<FrameworkFixtures>({
-  consent: async ({ page }, use) => {
-    await use({
-      acceptIfVisible: async () => acceptConsentIfVisible(page),
-    });
-  },
+    consent: async ({ page }, use) => {
+        await use({
+            acceptIfVisible: async () => acceptConsentIfVisible(page),
+        });
+    },
 
-  appPage: async ({ page }, use) => {
-    await use(new AppPage(page));
-  },
+    appPage: async ({ page }, use) => {
+        await use(new AppPage(page));
+    },
 
-  ae: async ({ page }, use) => {
-    // Centralized POM initialization (no more `new XPage(page)` in tests)
-    await use({
-      home: new HomePage(page),
-      auth: new AuthPage(page),
-      productDetails: new ProductDetailsPage(page),
-      cart: new CartPage(page),
-      checkout: new CheckoutPage(page),
-    });
-  },
-
-  resetStorageState: async ({ context }, use) => {
-    await use(async () => {
-      await context.clearCookies();
-      await context.clearPermissions();
-    });
-  },
+    ae: async ({ page, consent }, use) => {
+        await use({
+            home: new HomePage(page, consent),
+            auth: new AuthPage(page, consent),
+            productDetails: new ProductDetailsPage(page, consent),
+            cart: new CartPage(page, consent),
+            checkout: new CheckoutPage(page, consent),
+        });
+    },
+    resetStorageState: async ({ context }, use) => {
+        await use(async () => {
+            await context.clearCookies();
+            await context.clearPermissions();
+        });
+    },
 });

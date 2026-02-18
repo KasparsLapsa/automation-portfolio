@@ -1,74 +1,91 @@
-import { expect, Locator, Page } from '@playwright/test';
-import { acceptConsentIfVisible } from '../../helpers/util/consent';
-import { AeUser } from '../../test-data/ui/user.factory';
-import { NavBar } from '../../components/automationexercise/navbar.component';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { Consent } from '../../src/types';
+import type { AeUser } from '../../test-data/ui/user.factory';
+import { NavBar } from './components/navbar.component';
 
 export class AuthPage {
-    readonly page: Page;
-    readonly nav: NavBar;
+    private readonly navBar: NavBar;
+
+    constructor(
+        private readonly page: Page,
+        private readonly consent: Consent
+    ) {
+        this.navBar = new NavBar(page);
+    }
 
     // Signup (first screen)
-    readonly signupName: Locator;
-    readonly signupEmail: Locator;
-    readonly signupButton: Locator;
+    get signupName(): Locator {
+        return this.page.getByTestId('signup-name');
+    }
+    get signupEmail(): Locator {
+        return this.page.getByTestId('signup-email');
+    }
+    get signupButton(): Locator {
+        return this.page.getByTestId('signup-button');
+    }
 
     // Account details screen
-    readonly titleMr: Locator;
-    readonly password: Locator;
-    readonly days: Locator;
-    readonly months: Locator;
-    readonly years: Locator;
+    get titleMr(): Locator {
+        return this.page.getByRole('radio', { name: /^Mr\.$/i });
+    }
+    get titleMrs(): Locator {
+        return this.page.getByRole('radio', { name: /^Mrs\.$/i });
+    }
 
-    readonly firstName: Locator;
-    readonly lastName: Locator;
-    readonly company: Locator;
-    readonly address1: Locator;
-    readonly address2: Locator;
-    readonly country: Locator;
-    readonly state: Locator;
-    readonly city: Locator;
-    readonly zipcode: Locator;
-    readonly mobileNumber: Locator;
+    get password(): Locator {
+        return this.page.getByTestId('password');
+    }
+    get days(): Locator {
+        return this.page.getByTestId('days');
+    }
+    get months(): Locator {
+        return this.page.getByTestId('months');
+    }
+    get years(): Locator {
+        return this.page.getByTestId('years');
+    }
 
-    readonly createAccountButton: Locator;
-    readonly continueButton: Locator;
+    get firstName(): Locator {
+        return this.page.getByTestId('first_name');
+    }
+    get lastName(): Locator {
+        return this.page.getByTestId('last_name');
+    }
+    get company(): Locator {
+        return this.page.getByTestId('company');
+    }
+    get address1(): Locator {
+        return this.page.getByTestId('address');
+    }
+    get address2(): Locator {
+        return this.page.getByTestId('address2');
+    }
+    get country(): Locator {
+        return this.page.getByTestId('country');
+    }
+    get state(): Locator {
+        return this.page.getByTestId('state');
+    }
+    get city(): Locator {
+        return this.page.getByTestId('city');
+    }
+    get zipcode(): Locator {
+        return this.page.getByTestId('zipcode');
+    }
+    get mobileNumber(): Locator {
+        return this.page.getByTestId('mobile_number');
+    }
 
-    constructor(page: Page) {
-        this.page = page;
-        this.nav = new NavBar(page);
-
-        // These use data-qa => requires testIdAttribute: 'data-qa'
-        this.signupName = page.getByTestId('signup-name');
-        this.signupEmail = page.getByTestId('signup-email');
-        this.signupButton = page.getByTestId('signup-button');
-
-        this.titleMr = page.getByRole('radio', { name: /^Mr\.$/i });
-        this.password = page.getByTestId('password');
-        this.days = page.getByTestId('days');
-        this.months = page.getByTestId('months');
-        this.years = page.getByTestId('years');
-
-        this.firstName = page.getByTestId('first_name');
-        this.lastName = page.getByTestId('last_name');
-        this.company = page.getByTestId('company');
-        this.address1 = page.getByTestId('address');
-        this.address2 = page.getByTestId('address2');
-        this.country = page.getByTestId('country');
-        this.state = page.getByTestId('state');
-        this.city = page.getByTestId('city');
-        this.zipcode = page.getByTestId('zipcode');
-        this.mobileNumber = page.getByTestId('mobile_number');
-
-        this.createAccountButton = page.getByTestId('create-account');
-        this.continueButton = page.getByTestId('continue-button');
+    get createAccountButton(): Locator {
+        return this.page.getByTestId('create-account');
+    }
+    get continueButton(): Locator {
+        return this.page.getByTestId('continue-button');
     }
 
     async open(): Promise<void> {
-        const base = process.env.APP_URL;
-        if (!base) throw new Error('APP_URL is not set');
-
-        await this.page.goto(`${base}/login`);
-        await acceptConsentIfVisible(this.page);
+        await this.page.goto('/login');
+        await this.consent.acceptIfVisible();
         await expect(this.page).toHaveURL(/\/login/i);
     }
 
@@ -83,13 +100,14 @@ export class AuthPage {
             })
         ).toBeVisible();
 
-        await this.titleMr.check();
+        if (user.title === 'mr') await this.titleMr.check();
+        else await this.titleMrs.check();
+
         await this.password.fill(user.password);
 
-        // basic DOB
-        await this.days.selectOption('1');
-        await this.months.selectOption('1');
-        await this.years.selectOption('1990');
+        await this.days.selectOption(String(user.dob.day));
+        await this.months.selectOption(String(user.dob.month));
+        await this.years.selectOption(String(user.dob.year));
 
         await this.firstName.fill(user.firstName);
         await this.lastName.fill(user.lastName);
@@ -108,10 +126,9 @@ export class AuthPage {
             this.page.getByRole('heading', { name: /account created!/i })
         ).toBeVisible();
 
-        // Continue sometimes goes to an interstitial; keep it simple
         await this.continueButton.click();
-        await acceptConsentIfVisible(this.page);
+        await this.consent.acceptIfVisible();
 
-        await this.nav.expectLoggedIn();
+        await this.navBar.expectLoggedIn();
     }
 }

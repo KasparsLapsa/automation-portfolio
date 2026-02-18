@@ -1,28 +1,30 @@
 import { test, expect } from '../../../../fixtures/pom/test-options';
-import { HomePage } from '../../../../pages/automationexercise/home.page';
-import { ProductsPage } from '../../../../pages/automationexercise/products.page';
 
 test.describe('automationExercise - Products', () => {
     test(
         'should search products and show results',
-        { tag: ['@sanity', '@functional', '@flaky'] },
-        async ({ page }) => {
-            const home = new HomePage(page);
-            const products = new ProductsPage(page);
-
-            await test.step('GIVEN user opens home page', async () => {
-                await home.goto();
-                await home.expectLoaded();
+        { tag: ['@smoke', '@functional'] },
+        async ({ ae, page, consent }) => {
+            await test.step('GIVEN user is on products page', async () => {
+                await ae.home.goto();
+                await ae.home.productsLink.click();
+                await consent.acceptIfVisible();
+                await expect(page).toHaveURL(/\/products/i);
             });
 
             await test.step('WHEN user searches for a product', async () => {
-                await home.goToProducts();
-                await products.search('Dress');
+                const searchInput = page.getByPlaceholder(/search product/i);
+                await searchInput.fill('Dress');
+
+                await page.getByRole('button', { name: /search/i }).click();
             });
 
-            await test.step('THEN results should be visible', async () => {
-                await expect(products.searchedProductsHeading).toBeVisible();
-                await products.expectHasAnyDressResult();
+            await test.step('THEN results should be shown', async () => {
+                await expect(
+                    page.getByRole('heading', { name: /searched products/i })
+                ).toBeVisible();
+
+                await expect(page.getByText(/dress/i)).toBeVisible();
             });
         }
     );

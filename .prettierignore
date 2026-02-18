@@ -1,0 +1,5 @@
+test-results/
+playwright-report/
+tests/history-runs/
+tests/smart-report.html
+tests/smart-history.json

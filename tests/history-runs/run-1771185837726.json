@@ -1,349 +1,349 @@
 {
-  "runId": "run-1771185837726",
-  "timestamp": "2026-02-15T20:03:57.726Z",
-  "tests": {
-    "[ae-guest] app\\automationexercise\\ui\\smoke.spec.ts::should load home page": {
-      "testId": "[ae-guest] app\\automationexercise\\ui\\smoke.spec.ts::should load home page",
-      "title": "should load home page",
-      "file": "app\\automationexercise\\ui\\smoke.spec.ts",
-      "status": "passed",
-      "duration": 10918,
-      "retry": 0,
-      "steps": [
-        {
-          "title": "Launch browser",
-          "duration": 953,
-          "category": "pw:api"
+    "runId": "run-1771185837726",
+    "timestamp": "2026-02-15T20:03:57.726Z",
+    "tests": {
+        "[ae-guest] app\\automationexercise\\ui\\smoke.spec.ts::should load home page": {
+            "testId": "[ae-guest] app\\automationexercise\\ui\\smoke.spec.ts::should load home page",
+            "title": "should load home page",
+            "file": "app\\automationexercise\\ui\\smoke.spec.ts",
+            "status": "passed",
+            "duration": 10918,
+            "retry": 0,
+            "steps": [
+                {
+                    "title": "Launch browser",
+                    "duration": 953,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create context",
+                    "duration": 43,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create page",
+                    "duration": 688,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "GIVEN the user opens AutomationExercise",
+                    "duration": 4657,
+                    "category": "test.step",
+                    "isSlowest": true
+                },
+                {
+                    "title": "Navigate to \"/\"",
+                    "duration": 2629,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /^consent$/i })",
+                    "duration": 413,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Wait for function",
+                    "duration": 291,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "THEN the home page title should be correct",
+                    "duration": 2020,
+                    "category": "test.step"
+                },
+                {
+                    "title": "AND key home content should be visible",
+                    "duration": 37,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Close context",
+                    "duration": 2521,
+                    "category": "pw:api"
+                }
+            ]
         },
-        {
-          "title": "Create context",
-          "duration": 43,
-          "category": "pw:api"
+        "[ae-guest] app\\automationexercise\\ui\\auth\\cart.spec.ts::should add a product to cart": {
+            "testId": "[ae-guest] app\\automationexercise\\ui\\auth\\cart.spec.ts::should add a product to cart",
+            "title": "should add a product to cart",
+            "file": "app\\automationexercise\\ui\\auth\\cart.spec.ts",
+            "status": "passed",
+            "duration": 11104,
+            "retry": 0,
+            "steps": [
+                {
+                    "title": "Launch browser",
+                    "duration": 885,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create context",
+                    "duration": 38,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create page",
+                    "duration": 813,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "GIVEN user is on Products page",
+                    "duration": 3210,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Navigate to \"/products\"",
+                    "duration": 2590,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /^consent$/i })",
+                    "duration": 221,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Wait for function",
+                    "duration": 65,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "WHEN user opens a product and adds it to cart",
+                    "duration": 4001,
+                    "category": "test.step",
+                    "isSlowest": true
+                },
+                {
+                    "title": "Navigate to \"/product_details/1\"",
+                    "duration": 1847,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /add to cart/i })",
+                    "duration": 68,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Wait for selector getByRole('button', { name: /continue shopping/i })",
+                    "duration": 1060,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /continue shopping/i })",
+                    "duration": 912,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "THEN cart contains the product",
+                    "duration": 684,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Click getByRole('link', { name: /cart/i })",
+                    "duration": 583,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Close context",
+                    "duration": 2033,
+                    "category": "pw:api"
+                }
+            ]
         },
-        {
-          "title": "Create page",
-          "duration": 688,
-          "category": "pw:api"
-        },
-        {
-          "title": "GIVEN the user opens AutomationExercise",
-          "duration": 4657,
-          "category": "test.step",
-          "isSlowest": true
-        },
-        {
-          "title": "Navigate to \"/\"",
-          "duration": 2629,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /^consent$/i })",
-          "duration": 413,
-          "category": "pw:api"
-        },
-        {
-          "title": "Wait for function",
-          "duration": 291,
-          "category": "pw:api"
-        },
-        {
-          "title": "THEN the home page title should be correct",
-          "duration": 2020,
-          "category": "test.step"
-        },
-        {
-          "title": "AND key home content should be visible",
-          "duration": 37,
-          "category": "test.step"
-        },
-        {
-          "title": "Close context",
-          "duration": 2521,
-          "category": "pw:api"
+        "[ae-guest] app\\automationexercise\\ui\\e2e-checkout-start.spec.ts::should signup, add product to cart, and reach checkout": {
+            "testId": "[ae-guest] app\\automationexercise\\ui\\e2e-checkout-start.spec.ts::should signup, add product to cart, and reach checkout",
+            "title": "should signup, add product to cart, and reach checkout",
+            "file": "app\\automationexercise\\ui\\e2e-checkout-start.spec.ts",
+            "status": "passed",
+            "duration": 14678,
+            "retry": 0,
+            "steps": [
+                {
+                    "title": "Launch browser",
+                    "duration": 928,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create context",
+                    "duration": 13,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Create page",
+                    "duration": 721,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "GIVEN a new user signs up and is logged in",
+                    "duration": 9329,
+                    "category": "test.step",
+                    "isSlowest": true
+                },
+                {
+                    "title": "Navigate to \"/login\"",
+                    "duration": 2590,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /^consent$/i })",
+                    "duration": 171,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Wait for function",
+                    "duration": 23,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Kaspars\" getByTestId('signup-name')",
+                    "duration": 71,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"kaspars.1771185842380@mailinator.com\" getByTestId('signup-email')",
+                    "duration": 370,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByTestId('signup-button')",
+                    "duration": 737,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Check getByRole('radio', { name: /^Mr\\.$/i })",
+                    "duration": 104,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Test12345!\" getByTestId('password')",
+                    "duration": 123,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Select option getByTestId('days')",
+                    "duration": 86,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Select option getByTestId('months')",
+                    "duration": 42,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Select option getByTestId('years')",
+                    "duration": 36,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Kaspars\" getByTestId('first_name')",
+                    "duration": 100,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Lapsa\" getByTestId('last_name')",
+                    "duration": 151,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Automation Portfolio\" getByTestId('company')",
+                    "duration": 183,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"1 Test Street\" getByTestId('address')",
+                    "duration": 52,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Apt 2\" getByTestId('address2')",
+                    "duration": 48,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Select option getByTestId('country')",
+                    "duration": 61,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"QC\" getByTestId('state')",
+                    "duration": 53,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"Montreal\" getByTestId('city')",
+                    "duration": 66,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"H1A1A1\" getByTestId('zipcode')",
+                    "duration": 271,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Fill \"+37120000000\" getByTestId('mobile_number')",
+                    "duration": 1210,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByTestId('create-account')",
+                    "duration": 1526,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByTestId('continue-button')",
+                    "duration": 403,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "WHEN user adds a product to cart",
+                    "duration": 3051,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Navigate to \"/product_details/1\"",
+                    "duration": 2309,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /add to cart/i })",
+                    "duration": 110,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Wait for selector getByRole('button', { name: /continue shopping/i })",
+                    "duration": 307,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /continue shopping/i })",
+                    "duration": 91,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "AND user proceeds to checkout",
+                    "duration": 886,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Click getByRole('banner').getByRole('link', { name: /cart/i })",
+                    "duration": 388,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "Click getByRole('button', { name: /proceed to checkout/i }).or(getByRole('link', { name: /proceed to checkout/i })).or(getByText(/^proceed to checkout$/i))",
+                    "duration": 334,
+                    "category": "pw:api"
+                },
+                {
+                    "title": "THEN checkout page should be visible",
+                    "duration": 56,
+                    "category": "test.step"
+                },
+                {
+                    "title": "Close context",
+                    "duration": 419,
+                    "category": "pw:api"
+                }
+            ]
         }
-      ]
-    },
-    "[ae-guest] app\\automationexercise\\ui\\auth\\cart.spec.ts::should add a product to cart": {
-      "testId": "[ae-guest] app\\automationexercise\\ui\\auth\\cart.spec.ts::should add a product to cart",
-      "title": "should add a product to cart",
-      "file": "app\\automationexercise\\ui\\auth\\cart.spec.ts",
-      "status": "passed",
-      "duration": 11104,
-      "retry": 0,
-      "steps": [
-        {
-          "title": "Launch browser",
-          "duration": 885,
-          "category": "pw:api"
-        },
-        {
-          "title": "Create context",
-          "duration": 38,
-          "category": "pw:api"
-        },
-        {
-          "title": "Create page",
-          "duration": 813,
-          "category": "pw:api"
-        },
-        {
-          "title": "GIVEN user is on Products page",
-          "duration": 3210,
-          "category": "test.step"
-        },
-        {
-          "title": "Navigate to \"/products\"",
-          "duration": 2590,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /^consent$/i })",
-          "duration": 221,
-          "category": "pw:api"
-        },
-        {
-          "title": "Wait for function",
-          "duration": 65,
-          "category": "pw:api"
-        },
-        {
-          "title": "WHEN user opens a product and adds it to cart",
-          "duration": 4001,
-          "category": "test.step",
-          "isSlowest": true
-        },
-        {
-          "title": "Navigate to \"/product_details/1\"",
-          "duration": 1847,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /add to cart/i })",
-          "duration": 68,
-          "category": "pw:api"
-        },
-        {
-          "title": "Wait for selector getByRole('button', { name: /continue shopping/i })",
-          "duration": 1060,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /continue shopping/i })",
-          "duration": 912,
-          "category": "pw:api"
-        },
-        {
-          "title": "THEN cart contains the product",
-          "duration": 684,
-          "category": "test.step"
-        },
-        {
-          "title": "Click getByRole('link', { name: /cart/i })",
-          "duration": 583,
-          "category": "pw:api"
-        },
-        {
-          "title": "Close context",
-          "duration": 2033,
-          "category": "pw:api"
-        }
-      ]
-    },
-    "[ae-guest] app\\automationexercise\\ui\\e2e-checkout-start.spec.ts::should signup, add product to cart, and reach checkout": {
-      "testId": "[ae-guest] app\\automationexercise\\ui\\e2e-checkout-start.spec.ts::should signup, add product to cart, and reach checkout",
-      "title": "should signup, add product to cart, and reach checkout",
-      "file": "app\\automationexercise\\ui\\e2e-checkout-start.spec.ts",
-      "status": "passed",
-      "duration": 14678,
-      "retry": 0,
-      "steps": [
-        {
-          "title": "Launch browser",
-          "duration": 928,
-          "category": "pw:api"
-        },
-        {
-          "title": "Create context",
-          "duration": 13,
-          "category": "pw:api"
-        },
-        {
-          "title": "Create page",
-          "duration": 721,
-          "category": "pw:api"
-        },
-        {
-          "title": "GIVEN a new user signs up and is logged in",
-          "duration": 9329,
-          "category": "test.step",
-          "isSlowest": true
-        },
-        {
-          "title": "Navigate to \"/login\"",
-          "duration": 2590,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /^consent$/i })",
-          "duration": 171,
-          "category": "pw:api"
-        },
-        {
-          "title": "Wait for function",
-          "duration": 23,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Kaspars\" getByTestId('signup-name')",
-          "duration": 71,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"kaspars.1771185842380@mailinator.com\" getByTestId('signup-email')",
-          "duration": 370,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByTestId('signup-button')",
-          "duration": 737,
-          "category": "pw:api"
-        },
-        {
-          "title": "Check getByRole('radio', { name: /^Mr\\.$/i })",
-          "duration": 104,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Test12345!\" getByTestId('password')",
-          "duration": 123,
-          "category": "pw:api"
-        },
-        {
-          "title": "Select option getByTestId('days')",
-          "duration": 86,
-          "category": "pw:api"
-        },
-        {
-          "title": "Select option getByTestId('months')",
-          "duration": 42,
-          "category": "pw:api"
-        },
-        {
-          "title": "Select option getByTestId('years')",
-          "duration": 36,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Kaspars\" getByTestId('first_name')",
-          "duration": 100,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Lapsa\" getByTestId('last_name')",
-          "duration": 151,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Automation Portfolio\" getByTestId('company')",
-          "duration": 183,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"1 Test Street\" getByTestId('address')",
-          "duration": 52,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Apt 2\" getByTestId('address2')",
-          "duration": 48,
-          "category": "pw:api"
-        },
-        {
-          "title": "Select option getByTestId('country')",
-          "duration": 61,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"QC\" getByTestId('state')",
-          "duration": 53,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"Montreal\" getByTestId('city')",
-          "duration": 66,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"H1A1A1\" getByTestId('zipcode')",
-          "duration": 271,
-          "category": "pw:api"
-        },
-        {
-          "title": "Fill \"+37120000000\" getByTestId('mobile_number')",
-          "duration": 1210,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByTestId('create-account')",
-          "duration": 1526,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByTestId('continue-button')",
-          "duration": 403,
-          "category": "pw:api"
-        },
-        {
-          "title": "WHEN user adds a product to cart",
-          "duration": 3051,
-          "category": "test.step"
-        },
-        {
-          "title": "Navigate to \"/product_details/1\"",
-          "duration": 2309,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /add to cart/i })",
-          "duration": 110,
-          "category": "pw:api"
-        },
-        {
-          "title": "Wait for selector getByRole('button', { name: /continue shopping/i })",
-          "duration": 307,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /continue shopping/i })",
-          "duration": 91,
-          "category": "pw:api"
-        },
-        {
-          "title": "AND user proceeds to checkout",
-          "duration": 886,
-          "category": "test.step"
-        },
-        {
-          "title": "Click getByRole('banner').getByRole('link', { name: /cart/i })",
-          "duration": 388,
-          "category": "pw:api"
-        },
-        {
-          "title": "Click getByRole('button', { name: /proceed to checkout/i }).or(getByRole('link', { name: /proceed to checkout/i })).or(getByText(/^proceed to checkout$/i))",
-          "duration": 334,
-          "category": "pw:api"
-        },
-        {
-          "title": "THEN checkout page should be visible",
-          "duration": 56,
-          "category": "test.step"
-        },
-        {
-          "title": "Close context",
-          "duration": 419,
-          "category": "pw:api"
-        }
-      ]
     }
-  }
 }
