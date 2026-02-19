@@ -249,3 +249,4 @@ browserType.launch: Executable doesn't exist
 Install browsers:
 
 npx playwright install --with-deps chromium
+```
