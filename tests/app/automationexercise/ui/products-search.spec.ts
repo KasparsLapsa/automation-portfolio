@@ -24,7 +24,6 @@ test.describe('automationExercise - products search', () => {
             await expect(searchInput).toBeVisible();
 
             await searchInput.fill('Dress');
-            // Prefer Enter instead of clicking #submit_search (avoids raw locator + a11y-name issues)
             await searchInput.press('Enter');
 
             await expect(page).toHaveURL(/\/products\?search=Dress/i);
@@ -34,20 +33,16 @@ test.describe('automationExercise - products search', () => {
         });
 
         await test.step('Verify at least one visible result contains "Dress"', async () => {
-            // "View Product" links are accessible and present on product cards
             const viewProductLinks = page.getByRole('link', {
                 name: /view product/i,
             });
 
             const count = await viewProductLinks.count();
             expect(count).toBeGreaterThan(0);
-
-            // Check card text around the link in the browser context (no nth/first needed)
             const hasDress = await viewProductLinks.evaluateAll((links) => {
                 const re = /dress/i;
 
                 return links.some((a) => {
-                    // Try a few common ancestor patterns (AutomationExercise layout)
                     const card =
                         a.closest('.product-image-wrapper') ||
                         a.closest('.single-products') ||

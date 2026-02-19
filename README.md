@@ -59,15 +59,19 @@ npm run check
 Environment variables
 This repo loads env/.env.<environment> based on ENVIRONMENT (defaults to dev).
 
-env/.env.example (committed)
-Template you copy locally:
+env/.env.example (committed) — template
+
+env/.env.dev (local, git-ignored) — your local values
+
+Create your local env file:
 
 cp env/.env.example env/.env.dev
-env/.env.dev (local, git-ignored)
 For this portfolio you typically use:
 
 APP_URL=https://automationexercise.com
+
 API_URL=https://practice.expandtesting.com/api
+
 APP_EMAIL / APP_PASSWORD are optional (only needed if you add login-based flows later).
 
 Switch environment:
@@ -80,7 +84,6 @@ ENVIRONMENT=staging npm run test:ae:guest
 API-only runs do not require APP_URL if you run only --project=public-api.
 
 Running tests
-Quick commands
 # Quality checks (format + lint + typecheck)
 npm run check
 
@@ -220,10 +223,15 @@ Generated history/report files are ignored to keep PR diffs clean.
 Add to .gitignore and .prettierignore:
 
 test-results/
+
 playwright-report/
+
 tests/history-runs/
+
 tests/smart-report.html
+
 tests/smart-history.json
+
 Troubleshooting
 APP_URL is not set error
 UI projects require APP_URL. Ensure env/.env.dev exists and includes APP_URL.
@@ -241,5 +249,3 @@ browserType.launch: Executable doesn't exist
 Install browsers:
 
 npx playwright install --with-deps chromium
-::contentReference[oaicite:0]{index=0}
-```
