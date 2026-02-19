@@ -1,42 +1,58 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
 
 export class ProductsPage {
-    readonly page: Page;
+    constructor(private readonly page: Page) {}
 
-    readonly searchInput: Locator;
-    readonly searchButton: Locator;
-    readonly searchIconButton: Locator;
+    get allProductsHeading(): Locator {
+        return this.page.getByRole('heading', { name: /all products/i });
+    }
 
-    readonly searchedProductsHeading: Locator;
-    readonly anyDressText: Locator;
+    get searchedProductsHeading(): Locator {
+        return this.page.getByRole('heading', { name: /searched products/i });
+    }
 
-    constructor(page: Page) {
-        this.page = page;
+    get searchInput(): Locator {
+        return this.page.getByPlaceholder(/search product/i);
+    }
 
-        this.searchInput = page.getByPlaceholder(/search product/i);
-
-        this.searchButton = page.getByRole('button', { name: /^search$/i });
-        this.searchIconButton = page.getByRole('button', { name: // });
-
-        this.searchedProductsHeading = page.getByRole('heading', {
-            name: /searched products/i,
-        });
-        this.anyDressText = page.getByText(/dress/i);
+    async goto(): Promise<void> {
+        await this.page.goto('/products', { waitUntil: 'domcontentloaded' });
+        await expect(this.allProductsHeading).toBeVisible();
     }
 
     async search(term: string): Promise<void> {
+        await expect(this.searchInput).toBeVisible();
         await this.searchInput.fill(term);
 
-        if (await this.searchButton.isVisible().catch(() => false)) {
-            await this.searchButton.click();
-        } else {
-            await this.searchIconButton.click();
-        }
+        // Avoid clicking the icon-only button (would require a raw locator)
+        await this.searchInput.press('Enter');
 
         await expect(this.searchedProductsHeading).toBeVisible();
     }
 
-    async expectHasAnyDressResult(): Promise<void> {
-        await expect(this.anyDressText).not.toHaveCount(0);
+    async expectAtLeastOneVisibleResultContains(term: RegExp): Promise<void> {
+        // `/dress/i` can match hidden sidebar category link "Dress"
+        // -> exclude exact "Dress" and then assert at least one is actually visible
+        const matches = this.page
+            .getByText(term)
+            .filter({ hasNotText: /^dress$/i });
+
+        await expect
+            .poll(async () => {
+                return matches.evaluateAll((els) =>
+                    els.some((el) => {
+                        const e = el as HTMLElement;
+                        const style = window.getComputedStyle(e);
+                        const rect = e.getBoundingClientRect();
+                        return (
+                            style.display !== 'none' &&
+                            style.visibility !== 'hidden' &&
+                            rect.width > 0 &&
+                            rect.height > 0
+                        );
+                    })
+                );
+            })
+            .toBe(true);
     }
 }

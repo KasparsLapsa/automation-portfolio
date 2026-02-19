@@ -1,6 +1,6 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { ApiEndpoints, Messages } from '../../enums/app/app';
-import { NavigationComponent } from '../components/navigation.component';
+import { NavigationComponent } from '../automationexercise/components/navigation.component';
 
 /**
  * Page Object for the main application page.
