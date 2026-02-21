@@ -56,44 +56,57 @@ Install dependencies and Playwright browsers:
 ```bash
 npm ci
 npx playwright install --with-deps chromium
+```
 
 Run quality checks:
 
+```bash
 npm run check
-Environment variables
+```
 
-This repo loads env/.env.<environment> based on ENVIRONMENT (defaults to dev).
+---
 
-env/.env.example (committed)
+## Environment variables
 
-Template you copy locally.
+This repo loads `env/.env.<environment>` based on `ENVIRONMENT` (defaults to `dev`).
 
-env/.env.dev (local, git-ignored)
+- `env/.env.example` (committed) — template you copy locally
+- `env/.env.dev` (local, git-ignored)
 
 Create your local env file:
 
+```bash
 cp env/.env.example env/.env.dev
+```
 
-For this portfolio you typically use:
+Typical values for this portfolio:
 
+```env
 APP_URL=https://automationexercise.com
 API_URL=https://practice.expandtesting.com/api
 
 # Optional (only needed if you add login-based flows later)
 APP_EMAIL=your-email@example.com
 APP_PASSWORD=your-secure-password
+```
 
 Switch environment:
 
+```bash
 # default (dev)
 npm run test:ae:guest
 
 # example: staging
 ENVIRONMENT=staging npm run test:ae:guest
+```
 
-API-only runs do not require APP_URL if you run only --project=public-api.
+API-only runs do not require `APP_URL` if you run only `--project=public-api`.
 
-Running tests
+---
+
+## Running tests
+
+```bash
 # Quality checks (format + lint + typecheck)
 npm run check
 
@@ -120,164 +133,176 @@ npm run test:ci
 
 # Open last Playwright HTML report
 npm run report
-Projects
+```
 
-Defined in playwright.config.ts:
+---
 
-Project	Purpose	Notes
-setup	Creates authenticated storageState	Used by ae-auth
-ae-guest	UI tests without auth	Runs directly
-ae-auth	UI tests with auth	Depends on setup
-public-api	API tests (ExpandTesting)	Fast + Zod contracts
+## Projects
 
-Storage state path:
+Defined in `playwright.config.ts`:
 
-storage/.auth/automationexercise.json
+| Project      | Purpose                            | Notes                |
+| ------------ | ---------------------------------- | -------------------- |
+| `setup`      | Creates authenticated storageState | Used by `ae-auth`    |
+| `ae-guest`   | UI tests without auth              | Runs directly        |
+| `ae-auth`    | UI tests with auth                 | Depends on `setup`   |
+| `public-api` | API tests (ExpandTesting)          | Fast + Zod contracts |
 
-Tag reference
+Storage state path: `storage/.auth/automationexercise.json`
 
-Tags are applied on tests (not test.describe).
+---
 
-@smoke — critical fast checks
+## Tag reference
 
-@functional — feature-level UI checks
+Tags are applied on tests (not `test.describe`).
 
-@e2e — end-to-end flows
+- `@smoke` — critical fast checks
+- `@functional` — feature-level UI checks
+- `@e2e` — end-to-end flows
+- `@a11y` — accessibility checks
+- `@visual` — snapshot tests
+- `@destructive` — excluded from default run (`npm test`)
 
-@a11y — accessibility checks
+Example:
 
-@visual — snapshot tests
-
-@destructive — excluded from default run (npm test)
-
-Examples:
-
+```ts
 test('loads home', { tag: ['@smoke'] }, async ({ ae }) => {
-  // ...
+    // ...
 });
+```
 
-test('dangerous cleanup', { tag: ['@destructive'] }, async ({ apiRequest }) => {
-  // ...
-});
-Architecture
-Fixtures (what tests should use)
+---
+
+## Architecture
+
+### Fixtures (what tests should use)
 
 All specs import from:
 
+```ts
 import { test, expect } from '../../../../fixtures/pom/test-options';
+```
 
 Key fixtures:
 
-ae — bundled AutomationExercise page objects (DI / page manager)
+- `ae` — bundled AutomationExercise page objects (DI / page manager)
+- `consent` — `acceptIfVisible()` (single place where consent logic exists)
+- `apiRequest()` — typed API requests for API tests
+- `resetStorageState()` — clears cookies/permissions when needed
 
-consent — acceptIfVisible() (single place where consent logic exists)
+### POM + components
 
-apiRequest<T>() — typed API requests for API tests
-
-resetStorageState() — clears cookies/permissions when needed
-
-POM + components
-
-Page objects live under pages/**
-
-Reusable UI components live near their domain (e.g. pages/automationexercise/components/)
+- Page objects live under `pages/**`
+- Reusable UI components live near their domain (e.g. `pages/automationexercise/components/`)
 
 Preferred locator strategy order:
 
-getByRole
+1. `getByRole`
+2. `getByLabel`
+3. `getByPlaceholder`
+4. `getByText`
+5. `getByTestId` (fallback)
+6. `locator()` (last resort)
 
-getByLabel
+### API testing (Zod contracts)
 
-getByPlaceholder
-
-getByText
-
-getByTestId (fallback)
-
-locator() (last resort)
-
-API testing (Zod contracts)
-
-Schemas live in:
-
-fixtures/api/schemas/**
+Schemas live in: `fixtures/api/schemas/**`
 
 Example pattern:
 
-const { status, body } = await apiRequest<MyType>({
-  method: 'GET',
-  url: '/cars',
-  baseUrl: process.env.API_URL,
+```ts
+const { status, body } = await apiRequest({
+    method: 'GET',
+    url: '/cars',
+    baseUrl: process.env.API_URL,
 });
 
 expect(status).toBe(200);
 expect(MySchema.parse(body)).toBeTruthy();
-AI rules (Cursor)
+```
 
-This repo includes .cursor/rules/* to keep code generation consistent (selectors, fixtures, test structure).
+### AI rules (Cursor)
 
-Reporting
-Playwright HTML report
+This repo includes `.cursor/rules/*` to keep code generation consistent (selectors, fixtures, test structure).
 
-Generated automatically. Open locally:
+---
 
+## Reporting
+
+### Playwright HTML report
+
+Generated automatically.
+
+Open locally:
+
+```bash
 npm run report
-Smart Reporter (optional)
+```
+
+### Smart Reporter (optional)
 
 Enable locally:
 
+```bash
 RUN_SMART_REPORTER=1 npm run test:ae:guest
+```
 
 Outputs:
 
-tests/smart-report.html
+- `tests/smart-report.html`
+- `tests/smart-history.json`
 
-tests/smart-history.json
+---
 
-CI
-PR workflow
+## CI
+
+### PR workflow
 
 Runs:
 
-npm run check
+- `npm run check`
+- `npm run test:api`
 
-npm run test:api
-
-Nightly/manual UI workflow
+### Nightly/manual UI workflow
 
 Runs UI tests and publishes the Playwright HTML report to GitHub Pages:
 
-https://kasparslapsa.github.io/automation-portfolio/
+- https://kasparslapsa.github.io/automation-portfolio/
 
-Recommended ignores (keep PRs clean)
+---
+
+## Recommended ignores (keep PRs clean)
 
 Generated history/report files are ignored to keep PR diffs clean.
 
-Add to .gitignore and .prettierignore:
+Add to `.gitignore` and `.prettierignore`:
 
-test-results/
-playwright-report/
-tests/history-runs/
-tests/smart-report.html
-tests/smart-history.json
-Troubleshooting
-APP_URL is not set
+- `test-results/`
+- `playwright-report/`
+- `tests/history-runs/`
+- `tests/smart-report.html`
+- `tests/smart-history.json`
 
-UI projects require APP_URL. Ensure env/.env.dev exists and includes APP_URL.
+---
 
-Tests pass locally but fail in CI
+## Troubleshooting
+
+### `APP_URL is not set`
+
+UI projects require `APP_URL`. Ensure `env/.env.dev` exists and includes `APP_URL`.
+
+### Tests pass locally but fail in CI
 
 Common causes:
 
-slower machines (consider higher timeouts if needed)
+- slower machines (consider higher timeouts if needed)
+- unexpected modals/overlays (keep handling inside POM/fixtures)
+- environment instability (use traces + videos from the CI report)
 
-unexpected modals/overlays (keep handling inside POM/fixtures)
-
-environment instability (use traces + videos from the CI report)
-
-browserType.launch: Executable doesn't exist
+### `browserType.launch: Executable doesn't exist`
 
 Install browsers:
 
+```bash
 npx playwright install --with-deps chromium
 ```

@@ -11,6 +11,7 @@ test-downloads/
 env/.env.dev
 # Environment files (keep .env.example as template)
 env/.env.*
-!env/.env.example
+!env/
+.env.example
 # Playwright auth state
 storage/
