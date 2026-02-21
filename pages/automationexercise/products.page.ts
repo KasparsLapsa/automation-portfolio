@@ -1,7 +1,21 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { acceptConsentIfVisible } from '../../helpers/util/consent';
+import type { Consent } from '../../src/types';
+import { NavBar } from './components/navbar.component';
+
+function defaultConsent(page: Page): Consent {
+    return { acceptIfVisible: async () => acceptConsentIfVisible(page) };
+}
 
 export class ProductsPage {
-    constructor(private readonly page: Page) {}
+    readonly nav: NavBar;
+
+    constructor(
+        private readonly page: Page,
+        private readonly consent: Consent = defaultConsent(page)
+    ) {
+        this.nav = new NavBar(page);
+    }
 
     get allProductsHeading(): Locator {
         return this.page.getByRole('heading', { name: /all products/i });
@@ -15,8 +29,27 @@ export class ProductsPage {
         return this.page.getByPlaceholder(/search product/i);
     }
 
+    get searchButton(): Locator {
+        // Icon-only button on this site, so role+name is unreliable.
+        // eslint-disable-next-line playwright/no-raw-locators
+        return this.page.locator('#submit_search');
+    }
+
+    private get resultsSection(): Locator {
+        // eslint-disable-next-line playwright/no-raw-locators
+        return this.page.locator('.features_items', {
+            has: this.searchedProductsHeading,
+        });
+    }
+
+    private get productNameCells(): Locator {
+        // eslint-disable-next-line playwright/no-raw-locators
+        return this.resultsSection.locator('.productinfo p');
+    }
+
     async goto(): Promise<void> {
         await this.page.goto('/products', { waitUntil: 'domcontentloaded' });
+        await this.consent.acceptIfVisible();
         await expect(this.allProductsHeading).toBeVisible();
     }
 
@@ -24,35 +57,19 @@ export class ProductsPage {
         await expect(this.searchInput).toBeVisible();
         await this.searchInput.fill(term);
 
-        // Avoid clicking the icon-only button (would require a raw locator)
-        await this.searchInput.press('Enter');
+        await this.searchButton.click();
+        await this.consent.acceptIfVisible();
 
         await expect(this.searchedProductsHeading).toBeVisible();
     }
 
-    async expectAtLeastOneVisibleResultContains(term: RegExp): Promise<void> {
-        // `/dress/i` can match hidden sidebar category link "Dress"
-        // -> exclude exact "Dress" and then assert at least one is actually visible
-        const matches = this.page
-            .getByText(term)
-            .filter({ hasNotText: /^dress$/i });
+    async assertHasAnyProductNameMatching(re: RegExp): Promise<void> {
+        const matches = this.productNameCells.filter({ hasText: re });
 
         await expect
-            .poll(async () => {
-                return matches.evaluateAll((els) =>
-                    els.some((el) => {
-                        const e = el as HTMLElement;
-                        const style = window.getComputedStyle(e);
-                        const rect = e.getBoundingClientRect();
-                        return (
-                            style.display !== 'none' &&
-                            style.visibility !== 'hidden' &&
-                            rect.width > 0 &&
-                            rect.height > 0
-                        );
-                    })
-                );
+            .poll(async () => matches.count(), {
+                message: `Expected at least one visible product name matching ${re}`,
             })
-            .toBe(true);
+            .toBeGreaterThan(0);
     }
 }
