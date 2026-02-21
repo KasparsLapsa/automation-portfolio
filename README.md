@@ -26,6 +26,7 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 - [CI](#ci)
 - [Recommended ignores](#recommended-ignores-keep-prs-clean)
 - [Troubleshooting](#troubleshooting)
+- [Credits](#credits)
 
 ---
 
@@ -34,7 +35,7 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 - **TypeScript (strict)** + ESLint + Prettier
 - **Fixture-based architecture** (dependency injection)
 - **POM + components** with semantic locators (`getByRole`, `getByLabel`, etc.)
-- **Consent handling as a fixture** (single source of truth)
+- **Consent handling** as a fixture (single source of truth)
 - **API tests** with **Zod** response validation
 - **Faker** factories for unique test data
 - **Reports**: Playwright HTML + JUnit, optional Smart Reporter
@@ -100,7 +101,7 @@ npm run test:ae:guest
 ENVIRONMENT=staging npm run test:ae:guest
 ```
 
-API-only runs do not require `APP_URL` if you run only `--project=public-api`.
+> API-only runs do not require `APP_URL` if you run only `--project=public-api`.
 
 ---
 
@@ -116,13 +117,13 @@ npm run test:api
 # UI tests (guest)
 npm run test:ae:guest
 
-# UI tests (auth, uses storageState created by setup)
-npm run test:ae:auth
-
 # Setup only (creates storageState)
 npm run test:ae:setup
 
-# Smoke tests (UI)
+# UI tests (auth, uses storageState created by setup)
+npm run test:ae:auth
+
+# Smoke tests
 npm run test:smoke
 
 # Default suite (excludes @destructive)
@@ -177,25 +178,22 @@ test('loads home', { tag: ['@smoke'] }, async ({ ae }) => {
 
 ### Fixtures (what tests should use)
 
-All specs import from:
+Tests should import the merged fixtures from:
 
 ```ts
-import { test, expect } from '../../../../fixtures/pom/test-options';
+import { test, expect } from '../fixtures/pom/test-options';
 ```
+
+(Use the correct relative path for your spec location.)
 
 Key fixtures:
 
-- `ae` — bundled AutomationExercise page objects (DI / page manager)
-- `consent` — `acceptIfVisible()` (single place where consent logic exists)
-- `apiRequest()` — typed API requests for API tests
-- `resetStorageState()` — clears cookies/permissions when needed
+- UI fixtures via POM/page-object fixture
+- API fixture via `api-request-fixture`
 
-### POM + components
+### Locator strategy
 
-- Page objects live under `pages/**`
-- Reusable UI components live near their domain (e.g. `pages/automationexercise/components/`)
-
-Preferred locator strategy order:
+Preferred order:
 
 1. `getByRole`
 2. `getByLabel`
@@ -204,34 +202,11 @@ Preferred locator strategy order:
 5. `getByTestId` (fallback)
 6. `locator()` (last resort)
 
-### API testing (Zod contracts)
-
-Schemas live in: `fixtures/api/schemas/**`
-
-Example pattern:
-
-```ts
-const { status, body } = await apiRequest({
-    method: 'GET',
-    url: '/cars',
-    baseUrl: process.env.API_URL,
-});
-
-expect(status).toBe(200);
-expect(MySchema.parse(body)).toBeTruthy();
-```
-
-### AI rules (Cursor)
-
-This repo includes `.cursor/rules/*` to keep code generation consistent (selectors, fixtures, test structure).
-
 ---
 
 ## Reporting
 
 ### Playwright HTML report
-
-Generated automatically.
 
 Open locally:
 
@@ -246,11 +221,6 @@ Enable locally:
 ```bash
 RUN_SMART_REPORTER=1 npm run test:ae:guest
 ```
-
-Outputs:
-
-- `tests/smart-report.html`
-- `tests/smart-history.json`
 
 ---
 
@@ -275,13 +245,13 @@ Runs UI tests and publishes the Playwright HTML report to GitHub Pages:
 
 Generated history/report files are ignored to keep PR diffs clean.
 
-Add to `.gitignore` and `.prettierignore`:
+Recommended to ignore:
 
 - `test-results/`
 - `playwright-report/`
+- `blob-report/`
 - `tests/history-runs/`
-- `tests/smart-report.html`
-- `tests/smart-history.json`
+- `tests/smart-report.html` / `tests/smart-history.json` (or root equivalents)
 
 ---
 
@@ -306,3 +276,9 @@ Install browsers:
 ```bash
 npx playwright install --with-deps chromium
 ```
+
+---
+
+## Credits
+
+Based on a purchased scaffold (reviewed by Ivan) and then extended/customized for this portfolio.
