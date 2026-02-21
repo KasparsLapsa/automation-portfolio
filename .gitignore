@@ -1,17 +1,25 @@
-# Playwright
-tests/smart-history.json
+# Dependencies
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+
+# Playwright outputs
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# Auth state / storage
+storage/
 .auth/
-tests-cases/
+
+# Downloads / misc generated
 test-downloads/
-env/.env.dev
+
+# Smart reporter (support both locations just in case)
+smart-report.html
+smart-history.json
+tests/smart-report.html
+tests/smart-history.json
+
 # Environment files (keep .env.example as template)
 env/.env.*
-!env/
-.env.example
-# Playwright auth state
-storage/
+!env/.env.example
