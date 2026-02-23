@@ -261,6 +261,8 @@ Recommended to ignore:
 
 UI projects require `APP_URL`. Ensure `env/.env.dev` exists and includes `APP_URL`.
 
+**Reliability notes:** see [`reliability.md`](reliability.md).
+
 ### Tests pass locally but fail in CI
 
 Common causes:
