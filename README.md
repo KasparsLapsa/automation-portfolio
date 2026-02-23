@@ -51,6 +51,7 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 - `utilities/` – helpers (waiting, parsing, common actions)
 - `.github/workflows/` – CI pipelines (PR checks + scheduled runs)
 - `playwright.config.ts` – projects, reporters, retries, timeouts
+
 ---
 
 ## Prerequisites
