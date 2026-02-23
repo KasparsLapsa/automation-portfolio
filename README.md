@@ -43,6 +43,16 @@ A practical automation portfolio built with **Playwright + TypeScript**, showcas
 
 ---
 
+## Project tour
+
+- `tests/` – UI + API specs
+- `pages/` – Page Objects + reusable components
+- `fixtures/` – test fixtures (dependency injection) and shared setup
+- `utilities/` – helpers (waiting, parsing, common actions)
+- `.github/workflows/` – CI pipelines (PR checks + scheduled runs)
+- `playwright.config.ts` – projects, reporters, retries, timeouts
+---
+
 ## Prerequisites
 
 - **Node.js 20+**
